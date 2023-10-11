@@ -1,0 +1,888 @@
+---
+title: "Histocytometry gating"
+author: John Moore
+date: 2023-09-21
+format: html
+editor: visual
+---
+
+```{r, include= FALSE}
+knitr::opts_chunk$set(echo= FALSE)
+library(dplyr)
+library(data.table)
+library(here)
+library(ggplot2)
+library(cowplot)
+library(latex2exp)
+library(patchwork)
+library(tidyr)
+library(ggbeeswarm)
+library(ggpubr)
+library(PMCMRplus)
+library(tibble)
+library(gt)
+library(nlme)
+library(chisq.posthoc.test)
+library(ggpubr)
+library(rstatix)
+library(car)
+library(emmeans)
+library(afex)
+library(ggsignif)
+```
+
+Notes: 
+
+- Cell types as gated by Colin and John
+
+- Area of thymus regions calculated using CMJ boundaries that expand 50um outwards in both directions from the cortical-medullary boundary. 
+
+- There is no significance for any of the comparisons.
+
+  - Having only three replicates makes achieving statistical significance almost impossible.
+
+<!-- Results differ mildly if a CMJ with 25um of expansion and dilation is used instead -->
+
+
+```{r}
+raw_dir = "/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images/images_2023-08-10"
+hc_dirs = list.dirs(path= raw_dir, full.names= TRUE) 
+hc_dirs = sort(hc_dirs[grepl("_[A-D]$", hc_dirs)])
+hc_dirs = hc_dirs[!grepl("Sirpa_C$|CD207_CD11c_XCR1_C$|MerTK_C$|20x_pan_DAPI_CD63_CD11c_XCR1_D$", hc_dirs)]
+```
+
+```{r}
+## Load in data
+region_areas <- fread("/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images/images_2023-08-10/data/region_areas_50um.csv") %>% 
+  as.data.frame() %>% 
+  dplyr::filter(region_id != 0)
+  
+gated_df_list <- vector(mode= "list", length = length(hc_dirs))
+names(gated_df_list) <- hc_dirs
+
+for(histo_dir in hc_dirs){
+  gated_df_list[[histo_dir]] <- paste0(histo_dir, "/gated_pops_w_new_CMJ.csv") %>% 
+    fread() %>% 
+    as.data.frame() %>% 
+    mutate(sample = histo_dir) %>% 
+    rename(region_id= tissue_intensity_median) %>% 
+    filter(region_id != 0) %>% 
+    left_join(region_areas, by= c("sample", "region_id")) %>% 
+    dplyr::filter(cell_type != "not_annotated") %>% 
+    dplyr::select(CellID, X_centroid, Y_centroid, Area, cell_type, region_id, sample,
+           region_pixel_count, region_area, region_prop_table, total_area)
+}
+
+all_gated_cells <- do.call(rbind, gated_df_list)
+all_gated_cells %>% count(cell_type) %>% filter(cell_type == "pDC")
+  ## pDC	11547 	
+
+  ## Removing funky tiles
+    ## SiglecH_A has 1
+    ## SiglecH_B has 2
+all_gated_cells <- all_gated_cells %>% filter(!(grepl("20x_pan_DAPI_B220_CD11c_SiglecH_A", sample) &
+           Y_centroid < 14762 & Y_centroid > 13361 & X_centroid < 4190  & X_centroid > 2801),
+         !(grepl("20x_pan_DAPI_B220_CD11c_SiglecH_B", sample) &
+           ((Y_centroid < 9308 & Y_centroid > 7916 & X_centroid < 5522 & X_centroid > 4112) |
+            (Y_centroid < 16243 & Y_centroid > 14851 & X_centroid < 8315 & X_centroid > 6903))))
+
+all_gated_cells %>% count(cell_type) %>% filter(cell_type == "pDC")
+  ## pDC	10581	
+  ## 966 pDCs removed 
+
+## SiglecH_B tiles
+# mask[7916:9308, 4112:5522] = 1
+# mask[14851:16243, 6903:8315] = 1
+```
+
+```{r}
+all_region_info <- all_gated_cells %>%
+  group_by(sample, region_id, cell_type) %>% 
+  mutate(n_cell = length(unique(CellID)), 
+         cells_per_area = n_cell/region_area) %>% ## Units here will be cells per um^2
+  ungroup() %>% 
+  distinct(sample, region_id, n_cell, region_area, cells_per_area, cell_type) %>% 
+  mutate(thymus_region = ifelse(region_id == 1, "Cortex", 
+                                ifelse(region_id == 2, "CMJ", 
+                                       ifelse(region_id == 3, "Medulla", NA))),
+         thymus_region = factor(thymus_region, levels= c("Cortex", "CMJ", "Medulla")),
+         cells_per_area_converted = cells_per_area * 1000^2,
+         cell_type = ifelse(cell_type == "aDC2" & grepl("DAPI_CD63_CD11c_Sirpa_[A-D]$", sample),
+                            "aDC2_CD11c", 
+                            ifelse(cell_type == "aDC2" & grepl("DAPI_Sirpa_CD63_MerTK_[A-D]$", sample), 
+                                   "aDC2_MerTK", cell_type)),
+         cell_type = factor(cell_type, 
+                            levels= c("CD207+cDC1","CD14+cDC2", 
+                                      "aDC1", "aDC2_CD11c", "aDC2_MerTK", "pDC", "Macrophage"))) %>% 
+  as.data.frame()
+```
+
+
+```{r}
+thymus_region_cell_counts <- all_region_info %>% 
+  filter(cell_type != "Macrophage") %>% 
+  ggplot() +
+  aes(x= thymus_region, y= n_cell) + 
+  geom_boxplot(outlier.shape= NA) +
+  geom_beeswarm(size= 2.5) + 
+  theme_cowplot() + 
+  facet_wrap(~cell_type) +
+  xlab("") +
+  ylab("Cell count")
+
+plot(thymus_region_cell_counts)
+```
+
+```{r}
+thymus_regions_cell_counts_scaled <- all_region_info %>% 
+  filter(cell_type != "Macrophage") %>% 
+  ggplot() +
+  aes(x= thymus_region, y= cells_per_area_converted) + 
+  geom_boxplot(outlier.shape = NA) + 
+  geom_beeswarm(size= 2.5) +
+  theme_cowplot() +
+  facet_wrap(~cell_type,scales = "free_y") +
+  xlab("") + 
+  ylab(TeX("Cells / $mm^2$"))
+
+plot(thymus_regions_cell_counts_scaled)
+
+plot(thymus_regions_cell_counts_scaled + geom_line(aes(group= sample), linetype = "dashed"))
+  ## pDC_A is the medullary outlier. I wonder if that is the cortical segmentation failures rearing their ugly head.
+```
+
+
+
+```{r}
+## Ratio of aDC2s to macrophages
+aDC2_ratio <- all_region_info %>% 
+  filter(cell_type %in% c("aDC2_MerTK", "Macrophage")) %>% 
+  pivot_wider(id_cols = c(sample, thymus_region),
+              names_from  = cell_type, 
+              values_from = cells_per_area_converted) %>% 
+  mutate(aDC2_over_mac = aDC2_MerTK / Macrophage,
+         prob_aDC2     = aDC2_MerTK / (aDC2_MerTK + Macrophage)) %>% 
+  as.data.frame()
+
+ggplot(aDC2_ratio) +
+  aes(x= thymus_region, y= aDC2_over_mac) +
+  geom_boxplot(outlier.shape = NA) + 
+  geom_beeswarm(size = 2.5) + 
+  geom_hline(yintercept = 1, linetype = 2, linewidth= 1) +  
+  xlab("") + 
+  ylab("Ratio of aDC2s to Macrophages for MerTK stain") +
+  theme_cowplot()
+
+ggplot(aDC2_ratio) +
+  aes(x= thymus_region, y= prob_aDC2) +
+  geom_boxplot(outlier.shape = NA) + 
+  geom_beeswarm(size = 2.5) + 
+  scale_x_discrete(name = "") + 
+  scale_y_continuous(name = "Prop. of aDC2s out of aDC2s & Macs from MerTK stain",
+                     limits = c(0, NA), 
+                     expand = expansion(mult= c(0, 0.1))) +  
+  theme_cowplot()
+```
+
+### aDC2 levels after macrophage subtraction 
+
+I multiplied the CD11c+ aDC2s by the median proportion of the cells from the MerTK stains that are aDC2s. In other words, I assumed that the false positive rate for macs that were called CD11c+ aDC2s was the same as the number of CD63+ Sirpa+ cells in the MerTK stain that were called macropahges.
+
+Note that the CD11c+ aDC2s in the cortex and CMJ decrease as that's where the macrophages are.
+```{r, fig.dim= c(14,8)}
+## Measure of center for odds that aDC2 is a macrophage based on MerTK given its region
+## Measure of spread is the IQR inferred from 3 data points...
+aDC2_stats <- aDC2_ratio %>% 
+  group_by(thymus_region) %>% 
+  mutate(med_prob = median(prob_aDC2),
+         Q1_prob  = quantile(prob_aDC2, probs= 0.25),
+         Q3_prob  = quantile(prob_aDC2, probs= 0.75)) %>% 
+  ungroup() %>% 
+  select(thymus_region, matches("prob$")) %>% 
+  distinct() 
+
+corrected_all_region_info <- all_region_info %>% 
+  left_join(aDC2_stats, by= "thymus_region") %>% 
+  mutate(mac_corrected_cells_per_area_converted = ifelse(cell_type == "aDC2_CD11c", 
+                                                         cells_per_area_converted * med_prob,
+                                                         cells_per_area_converted))
+
+
+
+plot_cell_names <- c("CD207+cDC1" = "CD207+  cDC1", 
+                     "CD14+cDC2"   = "CD14+  cDC2",
+                     "aDC1"        = "aDC1",
+                     "aDC2_CD11c"  = "aDC2", 
+                     "aDC2_MerTK"  = "MerTK+  aDC2", 
+                     "pDC"         = "pDC",
+                     "Macrophage"  = "Macrophage")
+
+corrected_cells_per_area_plot <- corrected_all_region_info %>% 
+  dplyr::filter(!(cell_type %in% c("Macrophage", "aDC2_MerTK"))) %>% 
+  mutate(cell_type = plot_cell_names[cell_type],
+         cell_type = factor(cell_type, 
+                            levels= c("CD207+  cDC1","CD14+  cDC2", 
+                                      "aDC1", "aDC2", "pDC"))) %>% 
+  # compare_means(
+  #   formula  = mac_corrected_cells_per_area_converted ~ thymus_region,
+  #   method   = "wilcox.test", ## wilcox.test gives a p-value of 1, kruskal-Wallis test is ns.
+  #   paired   = TRUE,
+  #   group.by = "sample",
+  #   p.adjust.method = "holm") %>%
+  ggplot() +
+  aes(x= thymus_region, y= mac_corrected_cells_per_area_converted) + 
+  geom_boxplot(outlier.shape = NA) + 
+  geom_beeswarm(size= 2.5) +
+  theme_cowplot(font_size = 20) +
+  facet_wrap(~cell_type, scales = "free_y") +
+  xlab("") + 
+  scale_y_continuous(name   = TeX("Cells / $mm^2$"),
+                     expand = expansion(mult= c(0, 0.5)),
+                     limits = c(0, NA)) 
+
+corrected_cells_per_area_plot + geom_line(aes(group = sample))
+
+ggsave(filename = here("histocytometry/plots/corrected_cells_per_area_sans_funky_tiles.pdf"),
+       plot     = corrected_cells_per_area_plot, 
+       width    = 14,
+       height   = 8)
+
+## The values for the aDCs calculated by CD11c and MerTK are very different, but the relationship is the same. 
+## I need to add p-values. Probably a pairwise wilcox test for medulla vs. cortex and medulla vs. cmj.
+  ## There is no significance for the usual tests.
+```
+
+### This is the figure that I have in mind for the paper.
+
+## Statistical testing of mac-corrected cells per area
+
+No significance between cortex and medulla even without multiple-testing correction.
+```{r}
+uni_cell_types <- corrected_all_region_info %>% 
+  filter(!(cell_type %in% c("Macrophage", "aDC2_MerTK"))) %>% 
+  pull(cell_type) %>% 
+  unique()
+
+## Wilcoxon Signed Rank Test
+medulla_df <- corrected_all_region_info %>% 
+  filter(thymus_region == "Medulla")
+cortex_df <- corrected_all_region_info %>% 
+  filter(thymus_region == "Cortex")
+
+for(uni_cell_type in uni_cell_types){
+  print(uni_cell_type)
+  w_test <- wilcox.test(medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type],
+                        cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type],
+                        paired = TRUE)
+  print(w_test) 
+}
+
+for(uni_cell_type in uni_cell_types){
+  print(uni_cell_type)
+  t_test <- t.test(medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type],
+                   cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type],
+                   paired = TRUE)
+  print(t_test) 
+}
+## Nothing significant after bonferroni or holmp-value correction. 
+p.adjust(p = 0.01144 ,method = "bonferroni", n= 6)
+```
+
+
+```{r, include= FALSE}
+for(uni_cell_type in uni_cell_types){
+  print(uni_cell_type)
+  cell_type_df <- corrected_all_region_info %>% filter(cell_type == uni_cell_type)
+  
+  kw_test <- kruskal.test(mac_corrected_cells_per_area_converted ~ thymus_region, 
+                          data= cell_type_df)
+  print(kw_test)
+  # print(contrast(emmeans(kw_test, ~ thymus_region), "pairwise"))
+}
+
+## Kruskal-Wallis Rank Sum Test gives significance, but it assumes independence of groups, which is not the case here.
+## Would not be significant after multiple testing correction.
+
+# 
+# for(uni_cell_type in uni_cell_types){
+#   print(uni_cell_type)
+#   cell_type_df <- corrected_all_region_info %>% filter(cell_type == uni_cell_type)
+#   
+#   anova_test <- aov(mac_corrected_cells_per_area_converted ~ thymus_region, 
+#                           data= cell_type_df)
+#   print(summary(anova_test))
+#   
+#   print(contrast(emmeans(anova_test, ~ thymus_region), "pairwise"))
+# }
+```
+
+
+```{r}
+ft_pvalues <- vector(mode= "numeric", length = length(uni_cell_types))
+names(ft_pvalues) <- uni_cell_types
+
+
+for(uni_cell_type in uni_cell_types){
+  print(uni_cell_type)
+  
+  ft_data <- corrected_all_region_info %>% 
+    filter(cell_type == uni_cell_type) %>% 
+    distinct(sample, thymus_region, cell_type, mac_corrected_cells_per_area_converted) %>% 
+    pivot_wider(names_from  = "thymus_region",
+                values_from = "mac_corrected_cells_per_area_converted") %>% 
+    tibble::column_to_rownames("sample") %>% 
+    dplyr::select(Cortex, CMJ, Medulla) %>% 
+    as.matrix()
+  
+  friedman_test <- friedmanTest(ft_data)
+  ft_pvalues[uni_cell_type] <- friedman_test$p.value
+  
+  print(friedman_test)
+  
+  # ## Nemenyi's test
+  # post_hoc <- frdAllPairsNemenyiTest(y= ft_data) 
+  # print(post_hoc)
+    ## Not valid to go into post-hoc test b/c after multiple-testing correction, the p-values are significant.
+}
+
+p.adjust(p = ft_pvalues,method = "holm")
+```
+
+```{r}
+for(uni_cell_type in uni_cell_types){
+  print(uni_cell_type)
+  
+  cell_type_df <- corrected_all_region_info %>% 
+    filter(cell_type == uni_cell_type) %>% 
+    mutate(log10_respond = log10(mac_corrected_cells_per_area_converted))
+  
+  aov_test <- aov(log10_respond ~ thymus_region, 
+                          data= cell_type_df)
+  print(summary(aov_test))
+  print(contrast(emmeans(aov_test, ~ thymus_region), "pairwise"))
+}
+
+
+t_pvalues <- vector(mode= "numeric", length= length(uni_cell_types))
+names(t_pvalues) <- uni_cell_types
+for(uni_cell_type in uni_cell_types){
+  print(uni_cell_type)
+  
+  cell_type_df <- corrected_all_region_info %>% 
+    filter(cell_type == uni_cell_type) %>% 
+    mutate(log10_respond = log10(mac_corrected_cells_per_area_converted))
+  
+  t_test <- t.test(cell_type_df$log10_respond[cell_type_df$thymus_region == "Cortex"],
+                   cell_type_df$log10_respond[cell_type_df$thymus_region == "Medulla"],
+                   paired = TRUE)
+  print(t_test)
+  t_pvalues[uni_cell_type] <- t_test$p.value
+}
+p.adjust(t_pvalues, method= "holm")
+  ## This works. 
+```
+
+
+
+
+
+
+```{r, include= FALSE}
+## I think this approach is genuinely wrong.
+
+# x_pvalues <- vector(mode= "numeric", length = length(uni_cell_types))
+# names(x_pvalues) <- uni_cell_types
+# 
+# ## Rows would be regions, columns would be cell types 
+# x2_df <- corrected_all_region_info %>% 
+#   filter(cell_type %in% uni_cell_types) %>% 
+#   rename(density = mac_corrected_cells_per_area_converted) %>% 
+#   dplyr::distinct(thymus_region, cell_type, sample, density) %>% 
+#   group_by(cell_type, thymus_region) %>% 
+#   mutate(med_density = median(density)) %>% 
+#   ungroup() %>% 
+#   dplyr::distinct(thymus_region, cell_type, med_density) %>% 
+#   pivot_wider(names_from = "cell_type", 
+#               values_from = "med_density") %>% 
+#   column_to_rownames("thymus_region") 
+# 
+# x2_results <- chisq.test(x2_df,simulate.p.value = TRUE, B = 10000)
+# print(x2_results)
+# chisq.posthoc.test(x2_df)
+
+## I could use count data for each cell and region and then do a fisher's Exact test for each cell type 
+```
+
+
+
+```{r}
+modeling_df <- corrected_all_region_info %>% 
+  filter(!(cell_type %in% c("Macrophage", "aDC2_MerTK"))) %>% 
+  mutate(cell_type = as.factor(as.character(cell_type)),
+         log10_density = log10(mac_corrected_cells_per_area_converted))
+
+## Testing parametric assumptions
+
+## Visual normality check 
+ggplot(modeling_df, aes(x= log10_density)) +
+  geom_histogram() +
+  geom_density() + 
+  facet_grid(~thymus_region~cell_type)
+
+## Another check of normality 
+qqnorm(modeling_df$log10_density)
+qqline(modeling_df$log10_density)
+
+## Statistical test of normality 
+modeling_df %>%
+  group_by(cell_type, thymus_region) %>%
+  shapiro_test(log10_density)
+  ## aDC2 cortex is significantly not normal
+
+leveneTest(log10_density ~ cell_type * thymus_region, data = modeling_df, center = mean)
+  ## Also not not homogenous variance 
+```
+
+
+
+
+```{r}
+## Two-way ANOVA
+  ## If this provides significance, I should find a non-parametric test.
+
+res.aov2 <- aov(log10_density ~ cell_type:thymus_region, 
+                data = modeling_df) 
+print(res.aov2)
+  ## Results are unbalanced 
+replications(log10_density ~ cell_type * thymus_region,
+                data = modeling_df)
+summary(res.aov2)
+
+post_hoc_aov2 <- TukeyHSD(res.aov2)
+sig_interactions <- as.data.frame(post_hoc_aov2[["cell_type:thymus_region"]]) %>% 
+  rename(p.adj= `p adj`) %>% 
+  # filter(p.adj < 0.05) %>% 
+  rownames_to_column("interaction") %>% 
+  mutate(group1  = gsub("-.*", "", interaction),
+         group2  = gsub(".*-", "", interaction),
+         cell1   = gsub(":.*", "", group1),
+         cell2   = gsub(":.*", "", group2), 
+         region1 = gsub(".*:", "", group1),
+         region2 = gsub(".*:", "", group2)) %>% 
+  filter(cell1 == cell2) %>% 
+  dplyr::select(contains("cell"), contains("region"), p.adj) %>% 
+  mutate(is_sig = p.adj < 0.05) %>% 
+  arrange(p.adj)
+  
+gt(sig_interactions)
+## Two-way anova doesn't really test what we want cleanly.
+## But it finds a lot of significance
+```
+
+
+```{r}
+## Normal distribution of residuals
+hist(res.aov2$residuals) 
+  ## This is normal-ish.
+plot(res.aov2$residuals, res.aov2$fitted.values)
+  ## This checks for homoskedasticiy. 
+```
+
+```{r}
+## No outliers allowed
+modeling_df %>%
+  group_by(cell_type, thymus_region) %>%
+  identify_outliers(log10_density)
+
+## Normality of each group
+modeling_df %>%
+  group_by(cell_type, thymus_region) %>%
+  shapiro_test(log10_density)
+  ## aDC2 cortex is significantly not normal
+
+## Equal variance of each group 
+  ## I don't like this plot as much as plot(res.aov2$residuals, res.aov2$fitted.values)
+ggqqplot(modeling_df, "log10_density", ggtheme = theme_bw()) +
+  facet_grid(cell_type ~ thymus_region, labeller = "label_both")
+
+# modeling_df %>% 
+#   mutate(sample = as.factor(sample)) %>% 
+#   anova_test(dv= log10_density, wid= sample, within= c(thymus_region, cell_type))
+
+# res.aov <- modeling_df %>% 
+#   mutate(sample = as.factor(sample)) %>% 
+#   anova_test(dv   = log10_density, 
+#              wid  = sample,
+#              within = c(cell_type))
+# get_anova_table(res.aov)
+# 
+# 
+# one.way <- modeling_df %>%
+#   mutate(sample = as.factor(sample)) %>% 
+#   group_by(cell_type) %>%
+#   anova_test(dv = log10_density, wid = sample, within = thymus_region) %>%
+#   get_anova_table() %>%
+#   adjust_pvalue(method = "bonferroni")
+# one.way
+
+
+## In general, I need to run the two-way repeated measures anova
+```
+
+
+
+```{r}
+## Repeated measures anova 
+  ## Repeated measures refers to multiple measurements from the same individual (paired)
+p_list <- vector(mode= "list", length= length(uni_cell_types))
+names(p_list) <- uni_cell_types
+
+for(uni_cell_type in uni_cell_types){
+  print(uni_cell_type)
+  model_cell <- modeling_df %>% 
+    as.data.frame() %>%
+    distinct(log10_density, thymus_region, cell_type, sample) %>% 
+    filter(cell_type == uni_cell_type)
+  
+  
+  afmod <- afex::aov_car(log10_density ~ thymus_region + Error(sample/thymus_region),
+                         data= model_cell)
+    ## model_id is the between subject variance
+    ## Including thymus_region is the within subject variance 
+      ## I should do that with Error(model_id/thymus_region)
+  print(afex::nice(afmod, es="pes", correction = "GG"))
+  
+  em_version <- emmeans::emmeans(afmod, specs = ~thymus_region)
+  emmeans_results <- emmeans(afmod, "thymus_region")
+  pairwise_results <- pairs(emmeans_results, adjust = "tukey")
+  print(pairwise_results)
+  
+  p_list[[uni_cell_type]] <- pairwise_results %>% 
+    as.data.frame() %>% 
+    mutate(cell_type= uni_cell_type,
+           stars=  case_when(p.value < 0.0001 ~ "***",
+                             p.value < 0.01   ~ "**",
+                             p.value < 0.05   ~ "*",
+                             p.value > 0.05   ~ "ns")) 
+}
+one_way_results <- rbindlist(l= p_list, use.names= TRUE)
+  ## I like this approach.
+  ## If I treat each cell as a different experiment, then I think this makes more sense.
+```
+
+```{r}
+# individual_plots <- vector(mode= "list", length= length(uni_cell_types))
+# names(individual_plots) <- uni_cell_types
+# 
+# final_plot_data <- corrected_all_region_info %>% 
+#   dplyr::filter(!(cell_type %in% c("Macrophage", "aDC2_MerTK"))) %>% 
+#   mutate(cell_type = plot_cell_names[cell_type],
+#          cell_type = factor(cell_type, 
+#                             levels= c("CD207+  cDC1","CD14+  cDC2", 
+#                                       "aDC1", "aDC2", "pDC"))) %>% 
+#   rename(cell_density= mac_corrected_cells_per_area_converted)
+# 
+# for(uni_cell_type in uni_cell_types){
+#   p_values <- one_way_results %>% 
+#     filter(cell_type == uni_cell_type) %>% 
+#     arrange(contrast) %>% 
+#     pull(stars)
+#   
+#   final_plot_data %>% 
+#     filter(cell_type == uni_cell_type) %>%
+#     ggplot() + 
+#       aes(x= thymus_region, y= cell_density) + 
+#       geom_boxplot(outlier.shape = NA) + 
+#       geom_beeswarm(size= 2.5) +
+#       geom_signif(comparisons= list(c("CMJ", "Medulla"),
+#                                     c("Cortex", "CMJ"),
+#                                     c("Cortex", "Medulla")),
+#                   ) +
+#       ## This comparison order matches the order of the p-values I get from `p_values`
+#       theme_cowplot(font_size = 20) +
+#       facet_wrap(~cell_type, scales = "free_y") +
+#       xlab("") + 
+#       scale_y_continuous(name   = TeX("Cells / $mm^2$"),
+#                          expand = expansion(mult= c(0, 0.5)),
+#                          limits = c(0, NA)) 
+#     
+# }
+
+p_repeated_measures_anova <- one_way_results %>% 
+  mutate(cell_type = plot_cell_names[cell_type],
+         cell_type = factor(cell_type, 
+                            levels= c("CD207+  cDC1","CD14+  cDC2", 
+                                      "aDC1", "aDC2", "pDC"))) %>%
+  arrange(cell_type, contrast) %>% 
+    ## Re-arrange to match order of facets 
+  mutate(start = rep(c("CMJ", "Cortex", "Cortex"),   times= 5),
+         end   = rep(c("Medulla", "CMJ", "Medulla"), times= 5), 
+         y     = c(600, 350, 700,
+                   200, 50, 233,
+                   500, 200, 583,
+                   45, 35, 52.5,
+                   128, 110, 150))
+
+final_plot_data <- corrected_all_region_info %>% 
+  dplyr::filter(!(cell_type %in% c("Macrophage", "aDC2_MerTK"))) %>% 
+  mutate(cell_type = plot_cell_names[cell_type],
+         cell_type = factor(cell_type, 
+                            levels= c("CD207+  cDC1","CD14+  cDC2", 
+                                      "aDC1", "aDC2", "pDC"))) %>% 
+  rename(cell_density= mac_corrected_cells_per_area_converted)
+
+cell_density_w_pvalues <- final_plot_data %>% 
+  ggplot() +
+  aes(x= thymus_region, y= cell_density) + 
+  geom_boxplot(outlier.shape = NA) + 
+  geom_beeswarm(size= 2.5) +
+  geom_signif(data= p_repeated_measures_anova, 
+              aes(xmin = start, xmax= end, 
+                  annotations = stars,
+                  y_position= y),
+              textsize= 8, ## How does this look compared to theme_cowplot?
+              manual= TRUE) +
+  theme_cowplot(font_size = 20) +
+  facet_wrap(~cell_type, scales = "free_y") +
+  xlab("") + 
+  scale_y_continuous(name   = TeX("Cells / $mm^2$"),
+                     expand = expansion(mult= c(0.05, 0.15)),
+                     limits = c(0, NA)) 
+  
+cell_density_w_pvalues
+
+cell_density_w_pvalues + geom_line(aes(group = sample))
+
+ggsave(filename = here("histocytometry/plots/corrected_cell_density_w_pvalues_sans_tile_and_corrected_SiglecH_A_medulla.pdf"),
+       plot     = cell_density_w_pvalues, 
+       width    = 14,
+       height   = 8)
+```
+
+```{r}
+two_way_data <- modeling_df %>% 
+    distinct(log10_density, thymus_region, cell_type, sample) 
+  
+  
+afmod_2 <- afex::aov_car(log10_density ~ thymus_region * cell_type + Error(sample/thymus_region),
+                        data= two_way_data)
+
+print(afex::nice(afmod_2, es="pes", correction = "GG"))
+em_version <- emmeans::emmeans(afmod_2, specs = ~thymus_region|cell_type)
+pairwise_results <- pairs(em_version, adjust = "tukey")
+print(pairwise_results)
+pairwise_results <- as.data.frame(pairwise_results) %>% 
+  mutate(stars=  case_when(p.value < 0.0001 ~ "***",
+                           p.value < 0.01   ~ "**",
+                           p.value < 0.05   ~ "*",
+                           p.value > 0.05   ~ "ns"))
+
+  ## Does this do the p-value correction like I'm trying to do? 
+  ## I think this is fine. There is a thought that as long as the cell type tests are independent, they shouldn't be corrected together. 
+    ## They are not truly biologically independent, but they are all from different samples, so I'm going to stick with this.
+```
+
+
+
+
+
+
+```{r}
+cell_type_lme <- nlme::lme(log10_density ~ cell_type * thymus_region, 
+                           random = ~1 | sample,
+                           data = modeling_df)
+print(cell_type_lme)
+lme_summary <- summary(cell_type_lme)
+print(lme_summary)
+
+lme_stats <- lme_summary$tTable %>% 
+  as.data.frame() %>% 
+  rownames_to_column("comparison") %>% 
+  mutate(cell_type = gsub("cell_type|:.*", "", comparison),
+         thymus_region = gsub("thymus_region|.*:", "", comparison)) %>% 
+  rename(p_value= `p-value`) %>% 
+  dplyr::select(cell_type, thymus_region, p_value) %>% 
+  mutate(is_sig = p_value < 0.05) %>% 
+  arrange(p_value)
+
+print(lme_stats)
+
+## My question is how do I get only the tests between thymus regions with cell types?
+  ## Is LME the right choice? Should I just do some wilcox tests instead of a true post-hoc test?
+```
+
+```{r}
+library(emmeans)
+
+cell_type_emm <- contrast(emmeans(cell_type_lme, ~ cell_type:thymus_region), "pairwise") %>% 
+  as.data.frame()
+print(cell_type_emm)
+
+cell_type_emm %>% 
+  dplyr::filter(p.value < 0.05)
+
+##  aDC1 Cortex - aDC1 Medulla                 -238.7956 39.58699 20  -6.032  0.0005
+## aDC1 CMJ - aDC1 Medulla                    -155.0121 39.58699 20  -3.916  0.0427
+## (CD207+cDC1 Cortex) - (CD207+cDC1 CMJ)     -157.0383 39.58699 20  -3.967  0.0385
+## (CD207+cDC1 Cortex) - (CD207+cDC1 Medulla) -404.0145 39.58699 20 -10.206  <.0001
+## (CD207+cDC1 CMJ) - (CD207+cDC1 Medulla)    -246.9763 39.58699 20  -6.239  0.0003
+```
+
+```{r}
+thymus_region_lme <- nlme::lme(mac_corrected_cells_per_area_converted ~ thymus_region, 
+                                random = ~1 | cell_type/sample,
+                                data = modeling_df)
+summary(thymus_region_lme)
+  ## I don't think this gives me the downstream pairwise comparisons that I want. 
+
+
+contrast(emmeans(thymus_region_lme, ~ thymus_region), "pairwise")
+```
+
+
+
+
+```{r}
+library(multcomp)
+# Perform pairwise comparisons for each thymus_region
+comparison <- glht(cell_type_lme, linfct = mcp(thymus_region= "Tukey"))
+
+# Summarize the comparison results
+summary(comparison)
+
+
+```
+
+
+```{r}
+library(ordinal)
+library(recipes)
+  ## Used by IMPACC for trajectory group (visit 1 analyses)
+recipes::discretize(modeling_df$mac_corrected_cells_per_area_converted, cuts = 3)
+  ## Boundaries picked 
+
+modeling_df <- modeling_df %>% 
+  mutate(binned_outcome = case_when( 
+    mac_corrected_cells_per_area_converted < 17.47 ~ "low",
+    mac_corrected_cells_per_area_converted >= 17.47 &
+    mac_corrected_cells_per_area_converted < 88.9 ~ "med",
+    mac_corrected_cells_per_area_converted >= 88.9 ~ "high"),
+        binned_outcome = factor(binned_outcome, levels= c("low", "med", "high")))
+
+fm1 <- clm(binned_outcome ~ cell_type:thymus_region, 
+           data = modeling_df)
+  ## parametric vs. non-parametric? 
+fm1 ## print method
+summary(fm1)
+
+
+drop1(fm1, test = "Chi")
+```
+
+
+
+
+
+## Comparison to the Hogquist figures 
+
+The Hogquist lab doesn't actually do statistical testing between cell types called by histocytometry. They use flow cytometry data to make their boxplot and get significance. They do quantify the proportion of cells in each region without correcting for differences in area between cortex and medulla for their ROI. See Breed et al., 2022 Fig. 1E below.
+
+Papers:
+
+- [Breed et al., 2019](10.4049/jimmunol.1900191)
+
+- [Breed et al., 2022](10.1038/s41590-022-01218-x)
+
+**Breed et al., 2019 Fig. 5**
+![](Hogquist_figs/Breed_2019_Fig5B_J_Immunol.png)
+
+
+**Breed et al., 2022 Fig. 1E**
+![](Hogquist_figs/Breed_2022_Nat_Immunol_Fig1E.png)
+ 
+## Comparison to the Gerner et al., 2012 figures 
+
+The Gerner paper compares the proportion of cells in each region without correcting for region area. They get significance with 3 samples.
+
+**Gerner et al., 2012 Fig. 5D and 5E**
+![](Hogquist_figs/Gerner_2012_Fig5D_Immunity.png)
+
+## Cell type proportion figure with Ehrlich data
+```{r, fig.dim = c(12, 8)}
+cell_type_props <- corrected_all_region_info %>% 
+  mutate(n_cell = ifelse(cell_type == "aDC2_CD11c",
+                         n_cell*med_prob, ## Correcting for false-positive aDC2s
+                         n_cell)) %>% 
+  group_by(sample, cell_type) %>% 
+  mutate(n_cells_sample = sum(n_cell)) %>% 
+  group_by(sample, cell_type, thymus_region) %>% 
+  mutate(prop_cells_region = n_cell/n_cells_sample) %>% 
+  group_by(cell_type, thymus_region) %>% 
+  mutate(Q1_prop = quantile(prop_cells_region, probs= 0.25),
+         Q3_prop = quantile(prop_cells_region, probs= 0.75),
+         med_prop = median(prop_cells_region),
+         prop_sd = sd(prop_cells_region)) %>% 
+  ungroup()
+
+
+cell_type_props_plot <- cell_type_props %>% 
+  dplyr::filter(!(cell_type %in% c("Macrophage", "aDC2_MerTK"))) %>% 
+  mutate(cell_type = plot_cell_names[cell_type],
+         cell_type = factor(cell_type, 
+                            levels= c("CD207+  cDC1","CD14+  cDC2", 
+                                      "aDC1", "aDC2", "pDC"))) %>% 
+  ggplot() +
+  aes(x= thymus_region, y= prop_cells_region) + 
+  geom_boxplot(outlier.shape = NA) + 
+  geom_beeswarm(size= 2.5) +
+  theme_cowplot(font_size = 20) +
+  facet_wrap(~cell_type) +
+  xlab("") + 
+  scale_y_continuous(name   = "Cell frequencies",
+                     expand = expansion(mult= c(0.05, 0.15)),
+                     limits = c(0, 1)) 
+                     
+
+
+ggsave(plot     = cell_type_props_plot,
+       filename = here("histocytometry/plots/cell_type_props_plot_mac_corrected.pdf"),
+       width    = 14,
+       height   = 8)
+
+data_path= "/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images/images_2023-08-10/data/"
+cell_type_props %>% 
+  mutate(sample = gsub(".*/", "", sample)) %>% 
+  dplyr::distinct(sample, thymus_region, cell_type, prop_cells_region,
+                  Q1_prop, med_prop, Q3_prop) %>% 
+  fwrite(file = paste0(data_path, "cell_type_proportions_by_region_mac_corrected.csv"),
+         row.names = FALSE)
+```
+
+**This comparison doesn't yield any significance either using a wilcox signed rank exact test (non-parametric paired t-test).** 
+```{r}
+cell_types <- cell_type_props %>% filter(cell_type != "Macrophage") %>% pull(cell_type) %>% unique()
+
+for(cell_type in cell_types){
+  print(cell_type)
+  print(wilcox.test(cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &
+                                                cell_type_props$thymus_region == "Medulla"],
+              cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &
+                                                cell_type_props$thymus_region == "Cortex"], 
+              paired = TRUE))
+}
+
+```
+
+This doesn't look good enough to me to pursue further. If we scaled it by area, it would be statistically the same as the $cells / mm^2$ plots, which I think are more interpretable.
+
+
+
+
+
+
+
+
+
+
+
+

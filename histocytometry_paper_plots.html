@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="John Moore">
+<meta name="dcterms.date" content="2023-09-21">
+
+<title>Histocytometry gating</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="histocytometry_paper_plots_files/libs/clipboard/clipboard.min.js"></script>
+<script src="histocytometry_paper_plots_files/libs/quarto-html/quarto.js"></script>
+<script src="histocytometry_paper_plots_files/libs/quarto-html/popper.min.js"></script>
+<script src="histocytometry_paper_plots_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="histocytometry_paper_plots_files/libs/quarto-html/anchor.min.js"></script>
+<link href="histocytometry_paper_plots_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="histocytometry_paper_plots_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="histocytometry_paper_plots_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="histocytometry_paper_plots_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="histocytometry_paper_plots_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Histocytometry gating</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>John Moore </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 21, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Notes:</p>
+<ul>
+<li><p>Cell types as gated by Colin and John</p></li>
+<li><p>Area of thymus regions calculated using CMJ boundaries that expand 50um outwards in both directions from the cortical-medullary boundary.</p></li>
+<li><p>There is no significance for any of the comparisons.</p>
+<ul>
+<li>Having only three replicates makes achieving statistical significance almost impossible.</li>
+</ul></li>
+</ul>
+<!-- Results differ mildly if a CMJ with 25um of expansion and dilation is used instead -->
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="histocytometry_paper_plots_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="histocytometry_paper_plots_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p><strong>Both plots side by side to make it easier to see.</strong></p>
+<div class="cell" data-fig.dim="[14,8]">
+<div class="cell-output-display">
+<p><img src="histocytometry_paper_plots_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="histocytometry_paper_plots_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="histocytometry_paper_plots_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="adc2-levels-after-macrophage-subtraction" class="level3">
+<h3 class="anchored" data-anchor-id="adc2-levels-after-macrophage-subtraction">aDC2 levels after macrophage subtraction</h3>
+<p>I multiplied the CD11c+ aDC2s by the median proportion of the cells from the MerTK stains that are aDC2s. In other words, I assumed that the false positive rate for macs that were called CD11c+ aDC2s was the same as the number of CD63+ Sirpa+ cells in the MerTK stain that were called macropahges.</p>
+<p>Note that the CD11c+ aDC2s in the cortex and CMJ decrease as that’s where the macrophages are.</p>
+<div class="cell" data-fig.dim="[14,8]">
+<div class="cell-output-display">
+<p><img src="histocytometry_paper_plots_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="1344"></p>
+</div>
+</div>
+</section>
+<section id="this-is-the-figure-that-i-have-in-mind-for-the-paper." class="level3">
+<h3 class="anchored" data-anchor-id="this-is-the-figure-that-i-have-in-mind-for-the-paper.">This is the figure that I have in mind for the paper.</h3>
+</section>
+<section id="statistical-testing-of-mac-corrected-cells-per-area" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-testing-of-mac-corrected-cells-per-area">Statistical testing of mac-corrected cells per area</h2>
+<p>No significance between cortex and medulla even without multiple-testing correction.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "pDC"
+
+    Wilcoxon signed rank exact test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+V = 6, p-value = 0.25
+alternative hypothesis: true location shift is not equal to 0
+
+[1] "CD207+cDC1"
+
+    Wilcoxon signed rank exact test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+V = 6, p-value = 0.25
+alternative hypothesis: true location shift is not equal to 0
+
+[1] "aDC2_CD11c"
+
+    Wilcoxon signed rank exact test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+V = 6, p-value = 0.25
+alternative hypothesis: true location shift is not equal to 0
+
+[1] "aDC1"
+
+    Wilcoxon signed rank exact test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+V = 6, p-value = 0.25
+alternative hypothesis: true location shift is not equal to 0
+
+[1] "CD14+cDC2"
+
+    Wilcoxon signed rank exact test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+V = 6, p-value = 0.25
+alternative hypothesis: true location shift is not equal to 0</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "pDC"
+
+    Paired t-test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+t = 1.9778, df = 2, p-value = 0.1866
+alternative hypothesis: true mean difference is not equal to 0
+95 percent confidence interval:
+ -106.7375  288.3419
+sample estimates:
+mean difference 
+       90.80221 
+
+[1] "CD207+cDC1"
+
+    Paired t-test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+t = 9.269, df = 2, p-value = 0.01144
+alternative hypothesis: true mean difference is not equal to 0
+95 percent confidence interval:
+ 216.4720 591.5571
+sample estimates:
+mean difference 
+       404.0145 
+
+[1] "aDC2_CD11c"
+
+    Paired t-test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+t = 9.1542, df = 2, p-value = 0.01172
+alternative hypothesis: true mean difference is not equal to 0
+95 percent confidence interval:
+ 14.09303 39.09024
+sample estimates:
+mean difference 
+       26.59164 
+
+[1] "aDC1"
+
+    Paired t-test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+t = 2.8092, df = 2, p-value = 0.1068
+alternative hypothesis: true mean difference is not equal to 0
+95 percent confidence interval:
+ -126.9520  604.5431
+sample estimates:
+mean difference 
+       238.7956 
+
+[1] "CD14+cDC2"
+
+    Paired t-test
+
+data:  medulla_df$mac_corrected_cells_per_area_converted[medulla_df$cell_type == uni_cell_type] and cortex_df$mac_corrected_cells_per_area_converted[cortex_df$cell_type == uni_cell_type]
+t = 2.0612, df = 2, p-value = 0.1754
+alternative hypothesis: true mean difference is not equal to 0
+95 percent confidence interval:
+ -81.21088 230.57553
+sample estimates:
+mean difference 
+       74.68233 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.06864</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "pDC"
+
+    Friedman rank sum test
+
+data:  y
+Friedman chi-squared = 4.6667, df = 2, p-value = 0.09697
+
+[1] "CD207+cDC1"
+
+    Friedman rank sum test
+
+data:  y
+Friedman chi-squared = 6, df = 2, p-value = 0.04979
+
+[1] "aDC2_CD11c"
+
+    Friedman rank sum test
+
+data:  y
+Friedman chi-squared = 6, df = 2, p-value = 0.04979
+
+[1] "aDC1"
+
+    Friedman rank sum test
+
+data:  y
+Friedman chi-squared = 6, df = 2, p-value = 0.04979
+
+[1] "CD14+cDC2"
+
+    Friedman rank sum test
+
+data:  y
+Friedman chi-squared = 4.6667, df = 2, p-value = 0.09697</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       pDC CD207+cDC1 aDC2_CD11c       aDC1  CD14+cDC2 
+ 0.2489353  0.2489353  0.2489353  0.2489353  0.2489353 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test with simulated p-value (based on 10000
+    replicates)
+
+data:  x2_df
+X-squared = 180.11, df = NA, p-value = 9.999e-05</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in chisq.test(x, ...): Chi-squared approximation may be incorrect</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Dimension     Value               pDC        CD207+cDC1 aDC2_CD11c
+1    Cortex Residuals   10.232810675852 -5.36841922045445  0.1922016
+2    Cortex  p values                0*                0*  1.0000000
+3       CMJ Residuals  5.69176233842352 -1.95250439706392  0.6756805
+4       CMJ  p values                0*            0.7632  1.0000000
+5   Medulla Residuals -10.4891738032753  4.51383822239783 -0.7413134
+6   Medulla  p values                0*            1e-04*  1.0000000
+               aDC1         CD14+cDC2
+1 -4.21642406691369  1.34724619503559
+2            4e-04*                 1
+3 -1.64129115985295 -3.77278453530468
+4                 1           0.0024*
+5   3.6483573099354  2.94655606693339
+6            0.004*           0.0482*</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+   aov(formula = mac_corrected_cells_per_area_converted ~ cell_type:thymus_region, 
+    data = modeling_df)
+
+Terms:
+                cell_type:thymus_region Residuals
+Sum of Squares                 561368.6   92308.2
+Deg. of Freedom                      14        30
+
+Residual standard error: 55.47018
+1 out of 16 effects not estimable
+Estimated effects may be unbalanced</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              cell_type           thymus_region cell_type:thymus_region 
+                      9                      15                       3 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                        Df Sum Sq Mean Sq F value  Pr(&gt;F)    
+cell_type:thymus_region 14 561369   40098   13.03 4.1e-09 ***
+Residuals               30  92308    3077                    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="cell-output-display">
+
+<div id="aooyipiwbh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#aooyipiwbh table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#aooyipiwbh thead, #aooyipiwbh tbody, #aooyipiwbh tfoot, #aooyipiwbh tr, #aooyipiwbh td, #aooyipiwbh th {
+  border-style: none;
+}
+
+#aooyipiwbh p {
+  margin: 0;
+  padding: 0;
+}
+
+#aooyipiwbh .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#aooyipiwbh .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#aooyipiwbh .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#aooyipiwbh .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#aooyipiwbh .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#aooyipiwbh .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#aooyipiwbh .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#aooyipiwbh .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#aooyipiwbh .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#aooyipiwbh .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#aooyipiwbh .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#aooyipiwbh .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#aooyipiwbh .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#aooyipiwbh .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#aooyipiwbh .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aooyipiwbh .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#aooyipiwbh .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#aooyipiwbh .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#aooyipiwbh .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aooyipiwbh .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#aooyipiwbh .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aooyipiwbh .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#aooyipiwbh .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aooyipiwbh .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aooyipiwbh .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aooyipiwbh .gt_left {
+  text-align: left;
+}
+
+#aooyipiwbh .gt_center {
+  text-align: center;
+}
+
+#aooyipiwbh .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#aooyipiwbh .gt_font_normal {
+  font-weight: normal;
+}
+
+#aooyipiwbh .gt_font_bold {
+  font-weight: bold;
+}
+
+#aooyipiwbh .gt_font_italic {
+  font-style: italic;
+}
+
+#aooyipiwbh .gt_super {
+  font-size: 65%;
+}
+
+#aooyipiwbh .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#aooyipiwbh .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#aooyipiwbh .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#aooyipiwbh .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#aooyipiwbh .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#aooyipiwbh .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#aooyipiwbh .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="cell1">cell1</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="cell2">cell2</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="region1">region1</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="region2">region2</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="p.adj">p.adj</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="is_sig">is_sig</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="cell1" class="gt_row gt_left">CD207+cDC1</td>
+<td headers="cell2" class="gt_row gt_left">CD207+cDC1</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">5.812254e-08</td>
+<td headers="is_sig" class="gt_row gt_center">TRUE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">CD207+cDC1</td>
+<td headers="cell2" class="gt_row gt_left">CD207+cDC1</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">CMJ</td>
+<td headers="p.adj" class="gt_row gt_right">5.251654e-04</td>
+<td headers="is_sig" class="gt_row gt_center">TRUE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">aDC1</td>
+<td headers="cell2" class="gt_row gt_left">aDC1</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">8.565461e-04</td>
+<td headers="is_sig" class="gt_row gt_center">TRUE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">CD207+cDC1</td>
+<td headers="cell2" class="gt_row gt_left">CD207+cDC1</td>
+<td headers="region1" class="gt_row gt_left">CMJ</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">8.159930e-02</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">aDC1</td>
+<td headers="cell2" class="gt_row gt_left">aDC1</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">CMJ</td>
+<td headers="p.adj" class="gt_row gt_right">8.993434e-02</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">pDC</td>
+<td headers="cell2" class="gt_row gt_left">pDC</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">7.804747e-01</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">aDC1</td>
+<td headers="cell2" class="gt_row gt_left">aDC1</td>
+<td headers="region1" class="gt_row gt_left">CMJ</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">8.587986e-01</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">pDC</td>
+<td headers="cell2" class="gt_row gt_left">pDC</td>
+<td headers="region1" class="gt_row gt_left">CMJ</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">8.983546e-01</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">CD14+cDC2</td>
+<td headers="cell2" class="gt_row gt_left">CD14+cDC2</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">CMJ</td>
+<td headers="p.adj" class="gt_row gt_right">9.318382e-01</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">CD14+cDC2</td>
+<td headers="cell2" class="gt_row gt_left">CD14+cDC2</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">9.326399e-01</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">aDC2_CD11c</td>
+<td headers="cell2" class="gt_row gt_left">aDC2_CD11c</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">9.999987e-01</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">aDC2_CD11c</td>
+<td headers="cell2" class="gt_row gt_left">aDC2_CD11c</td>
+<td headers="region1" class="gt_row gt_left">CMJ</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">1.000000e+00</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">pDC</td>
+<td headers="cell2" class="gt_row gt_left">pDC</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">CMJ</td>
+<td headers="p.adj" class="gt_row gt_right">1.000000e+00</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">aDC2_CD11c</td>
+<td headers="cell2" class="gt_row gt_left">aDC2_CD11c</td>
+<td headers="region1" class="gt_row gt_left">Medulla</td>
+<td headers="region2" class="gt_row gt_left">CMJ</td>
+<td headers="p.adj" class="gt_row gt_right">1.000000e+00</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+    <tr><td headers="cell1" class="gt_row gt_left">CD14+cDC2</td>
+<td headers="cell2" class="gt_row gt_left">CD14+cDC2</td>
+<td headers="region1" class="gt_row gt_left">CMJ</td>
+<td headers="region2" class="gt_row gt_left">Cortex</td>
+<td headers="p.adj" class="gt_row gt_right">1.000000e+00</td>
+<td headers="is_sig" class="gt_row gt_center">FALSE</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: modeling_df 
+  Log-restricted-likelihood: -170.5242
+  Fixed: mac_corrected_cells_per_area_converted ~ cell_type * thymus_region 
+                             (Intercept) 
+                               3.0024047 
+                     cell_typeaDC2_CD11c 
+                              -0.3109308 
+                      cell_typeCD14+cDC2 
+                               1.7515865 
+                     cell_typeCD207+cDC1 
+                              11.0977215 
+                            cell_typepDC 
+                              43.1709990 
+                        thymus_regionCMJ 
+                              83.7834857 
+                    thymus_regionMedulla 
+                             238.7955625 
+    cell_typeaDC2_CD11c:thymus_regionCMJ 
+                             -68.5667996 
+     cell_typeCD14+cDC2:thymus_regionCMJ 
+                             -83.9103036 
+    cell_typeCD207+cDC1:thymus_regionCMJ 
+                              73.2547748 
+           cell_typepDC:thymus_regionCMJ 
+                              -4.3658673 
+cell_typeaDC2_CD11c:thymus_regionMedulla 
+                            -212.2039270 
+ cell_typeCD14+cDC2:thymus_regionMedulla 
+                            -164.1132332 
+cell_typeCD207+cDC1:thymus_regionMedulla 
+                             165.2189835 
+       cell_typepDC:thymus_regionMedulla 
+                            -147.9933544 
+
+Random effects:
+ Formula: ~1 | sample
+        (Intercept) Residual
+StdDev:    26.94896 48.48396
+
+Number of Observations: 45
+Number of Groups: 15 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: modeling_df 
+       AIC      BIC    logLik
+  375.0483 398.8687 -170.5242
+
+Random effects:
+ Formula: ~1 | sample
+        (Intercept) Residual
+StdDev:    26.94896 48.48396
+
+Fixed effects:  mac_corrected_cells_per_area_converted ~ cell_type * thymus_region 
+                                              Value Std.Error DF   t-value
+(Intercept)                                 3.00240  32.02573 20  0.093750
+cell_typeaDC2_CD11c                        -0.31093  45.29121 10 -0.006865
+cell_typeCD14+cDC2                          1.75159  45.29121 10  0.038674
+cell_typeCD207+cDC1                        11.09772  45.29121 10  0.245030
+cell_typepDC                               43.17100  45.29121 10  0.953187
+thymus_regionCMJ                           83.78349  39.58699 20  2.116440
+thymus_regionMedulla                      238.79556  39.58699 20  6.032173
+cell_typeaDC2_CD11c:thymus_regionCMJ      -68.56680  55.98446 20 -1.224747
+cell_typeCD14+cDC2:thymus_regionCMJ       -83.91030  55.98446 20 -1.498814
+cell_typeCD207+cDC1:thymus_regionCMJ       73.25477  55.98446 20  1.308484
+cell_typepDC:thymus_regionCMJ              -4.36587  55.98446 20 -0.077984
+cell_typeaDC2_CD11c:thymus_regionMedulla -212.20393  55.98446 20 -3.790408
+cell_typeCD14+cDC2:thymus_regionMedulla  -164.11323  55.98446 20 -2.931407
+cell_typeCD207+cDC1:thymus_regionMedulla  165.21898  55.98446 20  2.951158
+cell_typepDC:thymus_regionMedulla        -147.99335  55.98446 20 -2.643472
+                                         p-value
+(Intercept)                               0.9262
+cell_typeaDC2_CD11c                       0.9947
+cell_typeCD14+cDC2                        0.9699
+cell_typeCD207+cDC1                       0.8114
+cell_typepDC                              0.3630
+thymus_regionCMJ                          0.0470
+thymus_regionMedulla                      0.0000
+cell_typeaDC2_CD11c:thymus_regionCMJ      0.2349
+cell_typeCD14+cDC2:thymus_regionCMJ       0.1495
+cell_typeCD207+cDC1:thymus_regionCMJ      0.2055
+cell_typepDC:thymus_regionCMJ             0.9386
+cell_typeaDC2_CD11c:thymus_regionMedulla  0.0011
+cell_typeCD14+cDC2:thymus_regionMedulla   0.0083
+cell_typeCD207+cDC1:thymus_regionMedulla  0.0079
+cell_typepDC:thymus_regionMedulla         0.0156
+ Correlation: 
+                                         (Intr) cl_DC2_CD11 cl_CD14+DC2
+cell_typeaDC2_CD11c                      -0.707                        
+cell_typeCD14+cDC2                       -0.707  0.500                 
+cell_typeCD207+cDC1                      -0.707  0.500       0.500     
+cell_typepDC                             -0.707  0.500       0.500     
+thymus_regionCMJ                         -0.618  0.437       0.437     
+thymus_regionMedulla                     -0.618  0.437       0.437     
+cell_typeaDC2_CD11c:thymus_regionCMJ      0.437 -0.618      -0.309     
+cell_typeCD14+cDC2:thymus_regionCMJ       0.437 -0.309      -0.618     
+cell_typeCD207+cDC1:thymus_regionCMJ      0.437 -0.309      -0.309     
+cell_typepDC:thymus_regionCMJ             0.437 -0.309      -0.309     
+cell_typeaDC2_CD11c:thymus_regionMedulla  0.437 -0.618      -0.309     
+cell_typeCD14+cDC2:thymus_regionMedulla   0.437 -0.309      -0.618     
+cell_typeCD207+cDC1:thymus_regionMedulla  0.437 -0.309      -0.309     
+cell_typepDC:thymus_regionMedulla         0.437 -0.309      -0.309     
+                                         cl_CD207+DC1 cll_DC th_CMJ thym_M
+cell_typeaDC2_CD11c                                                       
+cell_typeCD14+cDC2                                                        
+cell_typeCD207+cDC1                                                       
+cell_typepDC                              0.500                           
+thymus_regionCMJ                          0.437        0.437              
+thymus_regionMedulla                      0.437        0.437  0.500       
+cell_typeaDC2_CD11c:thymus_regionCMJ     -0.309       -0.309 -0.707 -0.354
+cell_typeCD14+cDC2:thymus_regionCMJ      -0.309       -0.309 -0.707 -0.354
+cell_typeCD207+cDC1:thymus_regionCMJ     -0.618       -0.309 -0.707 -0.354
+cell_typepDC:thymus_regionCMJ            -0.309       -0.618 -0.707 -0.354
+cell_typeaDC2_CD11c:thymus_regionMedulla -0.309       -0.309 -0.354 -0.707
+cell_typeCD14+cDC2:thymus_regionMedulla  -0.309       -0.309 -0.354 -0.707
+cell_typeCD207+cDC1:thymus_regionMedulla -0.618       -0.309 -0.354 -0.707
+cell_typepDC:thymus_regionMedulla        -0.309       -0.618 -0.354 -0.707
+                                         c_DC2_CD11:_C c_CD14+DC2:_C
+cell_typeaDC2_CD11c                                                 
+cell_typeCD14+cDC2                                                  
+cell_typeCD207+cDC1                                                 
+cell_typepDC                                                        
+thymus_regionCMJ                                                    
+thymus_regionMedulla                                                
+cell_typeaDC2_CD11c:thymus_regionCMJ                                
+cell_typeCD14+cDC2:thymus_regionCMJ       0.500                     
+cell_typeCD207+cDC1:thymus_regionCMJ      0.500         0.500       
+cell_typepDC:thymus_regionCMJ             0.500         0.500       
+cell_typeaDC2_CD11c:thymus_regionMedulla  0.500         0.250       
+cell_typeCD14+cDC2:thymus_regionMedulla   0.250         0.500       
+cell_typeCD207+cDC1:thymus_regionMedulla  0.250         0.250       
+cell_typepDC:thymus_regionMedulla         0.250         0.250       
+                                         c_CD207+DC1:_C c_DC:_C c_DC2_CD11:_M
+cell_typeaDC2_CD11c                                                          
+cell_typeCD14+cDC2                                                           
+cell_typeCD207+cDC1                                                          
+cell_typepDC                                                                 
+thymus_regionCMJ                                                             
+thymus_regionMedulla                                                         
+cell_typeaDC2_CD11c:thymus_regionCMJ                                         
+cell_typeCD14+cDC2:thymus_regionCMJ                                          
+cell_typeCD207+cDC1:thymus_regionCMJ                                         
+cell_typepDC:thymus_regionCMJ             0.500                              
+cell_typeaDC2_CD11c:thymus_regionMedulla  0.250          0.250               
+cell_typeCD14+cDC2:thymus_regionMedulla   0.250          0.250   0.500       
+cell_typeCD207+cDC1:thymus_regionMedulla  0.500          0.250   0.500       
+cell_typepDC:thymus_regionMedulla         0.250          0.500   0.500       
+                                         c_CD14+DC2:_M c_CD207+DC1:_M
+cell_typeaDC2_CD11c                                                  
+cell_typeCD14+cDC2                                                   
+cell_typeCD207+cDC1                                                  
+cell_typepDC                                                         
+thymus_regionCMJ                                                     
+thymus_regionMedulla                                                 
+cell_typeaDC2_CD11c:thymus_regionCMJ                                 
+cell_typeCD14+cDC2:thymus_regionCMJ                                  
+cell_typeCD207+cDC1:thymus_regionCMJ                                 
+cell_typepDC:thymus_regionCMJ                                        
+cell_typeaDC2_CD11c:thymus_regionMedulla                             
+cell_typeCD14+cDC2:thymus_regionMedulla                              
+cell_typeCD207+cDC1:thymus_regionMedulla  0.500                      
+cell_typepDC:thymus_regionMedulla         0.500         0.500        
+
+Standardized Within-Group Residuals:
+          Min            Q1           Med            Q3           Max 
+-2.2096218527 -0.3596727865  0.0004759037  0.1664985680  2.7610600035 
+
+Number of Observations: 45
+Number of Groups: 15 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              cell_type       thymus_region      p_value is_sig
+1  thymus_regionMedulla             Medulla 6.750266e-06   TRUE
+2            aDC2_CD11c             Medulla 1.147929e-03   TRUE
+3            CD207+cDC1             Medulla 7.896509e-03   TRUE
+4             CD14+cDC2             Medulla 8.253747e-03   TRUE
+5                   pDC             Medulla 1.558608e-02   TRUE
+6      thymus_regionCMJ                 CMJ 4.704243e-02   TRUE
+7             CD14+cDC2                 CMJ 1.495411e-01  FALSE
+8            CD207+cDC1                 CMJ 2.055473e-01  FALSE
+9            aDC2_CD11c                 CMJ 2.349007e-01  FALSE
+10                  pDC        cell_typepDC 3.629671e-01  FALSE
+11           CD207+cDC1 cell_typeCD207+cDC1 8.113879e-01  FALSE
+12          (Intercept)         (Intercept) 9.262408e-01  FALSE
+13                  pDC                 CMJ 9.386161e-01  FALSE
+14            CD14+cDC2  cell_typeCD14+cDC2 9.699116e-01  FALSE
+15           aDC2_CD11c cell_typeaDC2_CD11c 9.946575e-01  FALSE</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code> contrast                                    estimate       SE df t.ratio
+ aDC1 Cortex - aDC2_CD11c Cortex               0.3109 45.29121 10   0.007
+ aDC1 Cortex - (CD14+cDC2 Cortex)             -1.7516 45.29121 10  -0.039
+ aDC1 Cortex - (CD207+cDC1 Cortex)           -11.0977 45.29121 10  -0.245
+ aDC1 Cortex - pDC Cortex                    -43.1710 45.29121 10  -0.953
+ aDC1 Cortex - aDC1 CMJ                      -83.7835 39.58699 20  -2.116
+ aDC1 Cortex - aDC2_CD11c CMJ                -14.9058 45.29121 10  -0.329
+ aDC1 Cortex - (CD14+cDC2 CMJ)                -1.6248 45.29121 10  -0.036
+ aDC1 Cortex - (CD207+cDC1 CMJ)             -168.1360 45.29121 10  -3.712
+ aDC1 Cortex - pDC CMJ                      -122.5886 45.29121 10  -2.707
+ aDC1 Cortex - aDC1 Medulla                 -238.7956 39.58699 20  -6.032
+ aDC1 Cortex - aDC2_CD11c Medulla            -26.2807 45.29121 10  -0.580
+ aDC1 Cortex - (CD14+cDC2 Medulla)           -76.4339 45.29121 10  -1.688
+ aDC1 Cortex - (CD207+cDC1 Medulla)         -415.1123 45.29121 10  -9.165
+ aDC1 Cortex - pDC Medulla                  -133.9732 45.29121 10  -2.958
+ aDC2_CD11c Cortex - (CD14+cDC2 Cortex)       -2.0625 45.29121 10  -0.046
+ aDC2_CD11c Cortex - (CD207+cDC1 Cortex)     -11.4087 45.29121 10  -0.252
+ aDC2_CD11c Cortex - pDC Cortex              -43.4819 45.29121 10  -0.960
+ aDC2_CD11c Cortex - aDC1 CMJ                -84.0944 45.29121 10  -1.857
+ aDC2_CD11c Cortex - aDC2_CD11c CMJ          -15.2167 39.58699 20  -0.384
+ aDC2_CD11c Cortex - (CD14+cDC2 CMJ)          -1.9357 45.29121 10  -0.043
+ aDC2_CD11c Cortex - (CD207+cDC1 CMJ)       -168.4469 45.29121 10  -3.719
+ aDC2_CD11c Cortex - pDC CMJ                -122.8995 45.29121 10  -2.714
+ aDC2_CD11c Cortex - aDC1 Medulla           -239.1065 45.29121 10  -5.279
+ aDC2_CD11c Cortex - aDC2_CD11c Medulla      -26.5916 39.58699 20  -0.672
+ aDC2_CD11c Cortex - (CD14+cDC2 Medulla)     -76.7448 45.29121 10  -1.694
+ aDC2_CD11c Cortex - (CD207+cDC1 Medulla)   -415.4232 45.29121 10  -9.172
+ aDC2_CD11c Cortex - pDC Medulla            -134.2841 45.29121 10  -2.965
+ (CD14+cDC2 Cortex) - (CD207+cDC1 Cortex)     -9.3461 45.29121 10  -0.206
+ (CD14+cDC2 Cortex) - pDC Cortex             -41.4194 45.29121 10  -0.915
+ (CD14+cDC2 Cortex) - aDC1 CMJ               -82.0319 45.29121 10  -1.811
+ (CD14+cDC2 Cortex) - aDC2_CD11c CMJ         -13.1542 45.29121 10  -0.290
+ (CD14+cDC2 Cortex) - (CD14+cDC2 CMJ)          0.1268 39.58699 20   0.003
+ (CD14+cDC2 Cortex) - (CD207+cDC1 CMJ)      -166.3844 45.29121 10  -3.674
+ (CD14+cDC2 Cortex) - pDC CMJ               -120.8370 45.29121 10  -2.668
+ (CD14+cDC2 Cortex) - aDC1 Medulla          -237.0440 45.29121 10  -5.234
+ (CD14+cDC2 Cortex) - aDC2_CD11c Medulla     -24.5291 45.29121 10  -0.542
+ (CD14+cDC2 Cortex) - (CD14+cDC2 Medulla)    -74.6823 39.58699 20  -1.887
+ (CD14+cDC2 Cortex) - (CD207+cDC1 Medulla)  -413.3607 45.29121 10  -9.127
+ (CD14+cDC2 Cortex) - pDC Medulla           -132.2216 45.29121 10  -2.919
+ (CD207+cDC1 Cortex) - pDC Cortex            -32.0733 45.29121 10  -0.708
+ (CD207+cDC1 Cortex) - aDC1 CMJ              -72.6858 45.29121 10  -1.605
+ (CD207+cDC1 Cortex) - aDC2_CD11c CMJ         -3.8080 45.29121 10  -0.084
+ (CD207+cDC1 Cortex) - (CD14+cDC2 CMJ)         9.4730 45.29121 10   0.209
+ (CD207+cDC1 Cortex) - (CD207+cDC1 CMJ)     -157.0383 39.58699 20  -3.967
+ (CD207+cDC1 Cortex) - pDC CMJ              -111.4909 45.29121 10  -2.462
+ (CD207+cDC1 Cortex) - aDC1 Medulla         -227.6978 45.29121 10  -5.027
+ (CD207+cDC1 Cortex) - aDC2_CD11c Medulla    -15.1830 45.29121 10  -0.335
+ (CD207+cDC1 Cortex) - (CD14+cDC2 Medulla)   -65.3362 45.29121 10  -1.443
+ (CD207+cDC1 Cortex) - (CD207+cDC1 Medulla) -404.0145 39.58699 20 -10.206
+ (CD207+cDC1 Cortex) - pDC Medulla          -122.8755 45.29121 10  -2.713
+ pDC Cortex - aDC1 CMJ                       -40.6125 45.29121 10  -0.897
+ pDC Cortex - aDC2_CD11c CMJ                  28.2652 45.29121 10   0.624
+ pDC Cortex - (CD14+cDC2 CMJ)                 41.5462 45.29121 10   0.917
+ pDC Cortex - (CD207+cDC1 CMJ)              -124.9650 45.29121 10  -2.759
+ pDC Cortex - pDC CMJ                        -79.4176 39.58699 20  -2.006
+ pDC Cortex - aDC1 Medulla                  -195.6246 45.29121 10  -4.319
+ pDC Cortex - aDC2_CD11c Medulla              16.8903 45.29121 10   0.373
+ pDC Cortex - (CD14+cDC2 Medulla)            -33.2629 45.29121 10  -0.734
+ pDC Cortex - (CD207+cDC1 Medulla)          -371.9413 45.29121 10  -8.212
+ pDC Cortex - pDC Medulla                    -90.8022 39.58699 20  -2.294
+ aDC1 CMJ - aDC2_CD11c CMJ                    68.8777 45.29121 10   1.521
+ aDC1 CMJ - (CD14+cDC2 CMJ)                   82.1587 45.29121 10   1.814
+ aDC1 CMJ - (CD207+cDC1 CMJ)                 -84.3525 45.29121 10  -1.862
+ aDC1 CMJ - pDC CMJ                          -38.8051 45.29121 10  -0.857
+ aDC1 CMJ - aDC1 Medulla                    -155.0121 39.58699 20  -3.916
+ aDC1 CMJ - aDC2_CD11c Medulla                57.5028 45.29121 10   1.270
+ aDC1 CMJ - (CD14+cDC2 Medulla)                7.3496 45.29121 10   0.162
+ aDC1 CMJ - (CD207+cDC1 Medulla)            -331.3288 45.29121 10  -7.316
+ aDC1 CMJ - pDC Medulla                      -50.1897 45.29121 10  -1.108
+ aDC2_CD11c CMJ - (CD14+cDC2 CMJ)             13.2810 45.29121 10   0.293
+ aDC2_CD11c CMJ - (CD207+cDC1 CMJ)          -153.2302 45.29121 10  -3.383
+ aDC2_CD11c CMJ - pDC CMJ                   -107.6829 45.29121 10  -2.378
+ aDC2_CD11c CMJ - aDC1 Medulla              -223.8898 45.29121 10  -4.943
+ aDC2_CD11c CMJ - aDC2_CD11c Medulla         -11.3749 39.58699 20  -0.287
+ aDC2_CD11c CMJ - (CD14+cDC2 Medulla)        -61.5282 45.29121 10  -1.359
+ aDC2_CD11c CMJ - (CD207+cDC1 Medulla)      -400.2065 45.29121 10  -8.836
+ aDC2_CD11c CMJ - pDC Medulla               -119.0675 45.29121 10  -2.629
+ (CD14+cDC2 CMJ) - (CD207+cDC1 CMJ)         -166.5112 45.29121 10  -3.676
+ (CD14+cDC2 CMJ) - pDC CMJ                  -120.9638 45.29121 10  -2.671
+ (CD14+cDC2 CMJ) - aDC1 Medulla             -237.1708 45.29121 10  -5.237
+ (CD14+cDC2 CMJ) - aDC2_CD11c Medulla        -24.6559 45.29121 10  -0.544
+ (CD14+cDC2 CMJ) - (CD14+cDC2 Medulla)       -74.8091 39.58699 20  -1.890
+ (CD14+cDC2 CMJ) - (CD207+cDC1 Medulla)     -413.4875 45.29121 10  -9.130
+ (CD14+cDC2 CMJ) - pDC Medulla              -132.3484 45.29121 10  -2.922
+ (CD207+cDC1 CMJ) - pDC CMJ                   45.5474 45.29121 10   1.006
+ (CD207+cDC1 CMJ) - aDC1 Medulla             -70.6596 45.29121 10  -1.560
+ (CD207+cDC1 CMJ) - aDC2_CD11c Medulla       141.8553 45.29121 10   3.132
+ (CD207+cDC1 CMJ) - (CD14+cDC2 Medulla)       91.7021 45.29121 10   2.025
+ (CD207+cDC1 CMJ) - (CD207+cDC1 Medulla)    -246.9763 39.58699 20  -6.239
+ (CD207+cDC1 CMJ) - pDC Medulla               34.1628 45.29121 10   0.754
+ pDC CMJ - aDC1 Medulla                     -116.2069 45.29121 10  -2.566
+ pDC CMJ - aDC2_CD11c Medulla                 96.3079 45.29121 10   2.126
+ pDC CMJ - (CD14+cDC2 Medulla)                46.1547 45.29121 10   1.019
+ pDC CMJ - (CD207+cDC1 Medulla)             -292.5237 45.29121 10  -6.459
+ pDC CMJ - pDC Medulla                       -11.3846 39.58699 20  -0.288
+ aDC1 Medulla - aDC2_CD11c Medulla           212.5149 45.29121 10   4.692
+ aDC1 Medulla - (CD14+cDC2 Medulla)          162.3616 45.29121 10   3.585
+ aDC1 Medulla - (CD207+cDC1 Medulla)        -176.3167 45.29121 10  -3.893
+ aDC1 Medulla - pDC Medulla                  104.8224 45.29121 10   2.314
+ aDC2_CD11c Medulla - (CD14+cDC2 Medulla)    -50.1532 45.29121 10  -1.107
+ aDC2_CD11c Medulla - (CD207+cDC1 Medulla)  -388.8316 45.29121 10  -8.585
+ aDC2_CD11c Medulla - pDC Medulla           -107.6925 45.29121 10  -2.378
+ (CD14+cDC2 Medulla) - (CD207+cDC1 Medulla) -338.6784 45.29121 10  -7.478
+ (CD14+cDC2 Medulla) - pDC Medulla           -57.5393 45.29121 10  -1.270
+ (CD207+cDC1 Medulla) - pDC Medulla          281.1391 45.29121 10   6.207
+ p.value
+  1.0000
+  1.0000
+  1.0000
+  0.9988
+  0.7120
+  1.0000
+  1.0000
+  0.1151
+  0.4073
+  0.0005
+  1.0000
+  0.8970
+  0.0002
+  0.3048
+  1.0000
+  1.0000
+  0.9987
+  0.8315
+  1.0000
+  1.0000
+  0.1141
+  0.4042
+  0.0138
+  1.0000
+  0.8947
+  0.0002
+  0.3023
+  1.0000
+  0.9992
+  0.8507
+  1.0000
+  1.0000
+  0.1213
+  0.4248
+  0.0146
+  1.0000
+  0.8346
+  0.0002
+  0.3192
+  0.9999
+  0.9229
+  1.0000
+  1.0000
+  0.0385
+  0.5253
+  0.0192
+  1.0000
+  0.9609
+  &lt;.0001
+  0.4044
+  0.9993
+  1.0000
+  0.9992
+  0.3842
+  0.7741
+  0.0503
+  1.0000
+  0.9999
+  0.0004
+  0.6049
+  0.9447
+  0.8496
+  0.8291
+  0.9996
+  0.0427
+  0.9847
+  1.0000
+  0.0011
+  0.9951
+  1.0000
+  0.1784
+  0.5688
+  0.0215
+  1.0000
+  0.9744
+  0.0002
+  0.4430
+  0.1208
+  0.4235
+  0.0146
+  1.0000
+  0.8331
+  0.0002
+  0.3181
+  0.9980
+  0.9350
+  0.2462
+  0.7530
+  0.0003
+  0.9999
+  0.4733
+  0.7012
+  0.9977
+  0.0031
+  1.0000
+  0.0302
+  0.1366
+  0.0901
+  0.6020
+  0.9951
+  0.0003
+  0.5687
+  0.0010
+  0.9846
+  0.0042
+
+Degrees-of-freedom method: containment 
+P value adjustment: tukey method for comparing a family of 15 estimates </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> contrast                                    estimate       SE df t.ratio
+ aDC1 Cortex - aDC1 Medulla                 -238.7956 39.58699 20  -6.032
+ aDC1 Cortex - (CD207+cDC1 Medulla)         -415.1123 45.29121 10  -9.165
+ aDC2_CD11c Cortex - aDC1 Medulla           -239.1065 45.29121 10  -5.279
+ aDC2_CD11c Cortex - (CD207+cDC1 Medulla)   -415.4232 45.29121 10  -9.172
+ (CD14+cDC2 Cortex) - aDC1 Medulla          -237.0440 45.29121 10  -5.234
+ (CD14+cDC2 Cortex) - (CD207+cDC1 Medulla)  -413.3607 45.29121 10  -9.127
+ (CD207+cDC1 Cortex) - (CD207+cDC1 CMJ)     -157.0383 39.58699 20  -3.967
+ (CD207+cDC1 Cortex) - aDC1 Medulla         -227.6978 45.29121 10  -5.027
+ (CD207+cDC1 Cortex) - (CD207+cDC1 Medulla) -404.0145 39.58699 20 -10.206
+ pDC Cortex - (CD207+cDC1 Medulla)          -371.9413 45.29121 10  -8.212
+ aDC1 CMJ - aDC1 Medulla                    -155.0121 39.58699 20  -3.916
+ aDC1 CMJ - (CD207+cDC1 Medulla)            -331.3288 45.29121 10  -7.316
+ aDC2_CD11c CMJ - aDC1 Medulla              -223.8898 45.29121 10  -4.943
+ aDC2_CD11c CMJ - (CD207+cDC1 Medulla)      -400.2065 45.29121 10  -8.836
+ (CD14+cDC2 CMJ) - aDC1 Medulla             -237.1708 45.29121 10  -5.237
+ (CD14+cDC2 CMJ) - (CD207+cDC1 Medulla)     -413.4875 45.29121 10  -9.130
+ (CD207+cDC1 CMJ) - (CD207+cDC1 Medulla)    -246.9763 39.58699 20  -6.239
+ pDC CMJ - (CD207+cDC1 Medulla)             -292.5237 45.29121 10  -6.459
+ aDC1 Medulla - aDC2_CD11c Medulla           212.5149 45.29121 10   4.692
+ aDC2_CD11c Medulla - (CD207+cDC1 Medulla)  -388.8316 45.29121 10  -8.585
+ (CD14+cDC2 Medulla) - (CD207+cDC1 Medulla) -338.6784 45.29121 10  -7.478
+ (CD207+cDC1 Medulla) - pDC Medulla          281.1391 45.29121 10   6.207
+ p.value
+  0.0005
+  0.0002
+  0.0138
+  0.0002
+  0.0146
+  0.0002
+  0.0385
+  0.0192
+  &lt;.0001
+  0.0004
+  0.0427
+  0.0011
+  0.0215
+  0.0002
+  0.0146
+  0.0002
+  0.0003
+  0.0031
+  0.0302
+  0.0003
+  0.0010
+  0.0042
+
+Degrees-of-freedom method: containment 
+P value adjustment: tukey method for comparing a family of 15 estimates </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: modeling_df 
+       AIC      BIC    logLik
+  515.7618 526.1878 -251.8809
+
+Random effects:
+ Formula: ~1 | cell_type
+        (Intercept)
+StdDev:    69.07375
+
+ Formula: ~1 | sample %in% cell_type
+        (Intercept) Residual
+StdDev: 0.006860872  80.1942
+
+Fixed effects:  mac_corrected_cells_per_area_converted ~ thymus_region 
+                         Value Std.Error DF  t-value p-value
+(Intercept)           14.14428  37.18840 28 0.380341  0.7066
+thymus_regionCMJ      67.06585  29.28278 28 2.290283  0.0297
+thymus_regionMedulla 166.97726  29.28278 28 5.702234  0.0000
+ Correlation: 
+                     (Intr) th_CMJ
+thymus_regionCMJ     -0.394       
+thymus_regionMedulla -0.394  0.500
+
+Standardized Within-Group Residuals:
+        Min          Q1         Med          Q3         Max 
+-1.42802090 -0.87568264  0.02953103  0.53924456  2.52846323 
+
+Number of Observations: 45
+Number of Groups: 
+            cell_type sample %in% cell_type 
+                    5                    15 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code> contrast         estimate   SE df t.ratio p.value
+ Cortex - CMJ        -67.1 29.3 28  -2.290  0.0738
+ Cortex - Medulla   -167.0 29.3 28  -5.702  &lt;.0001
+ CMJ - Medulla       -99.9 29.3 28  -3.412  0.0054
+
+Degrees-of-freedom method: containment 
+P value adjustment: tukey method for comparing a family of 3 estimates </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: mvtnorm</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: survival</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: TH.data</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: MASS</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'MASS'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:patchwork':
+
+    area</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    select</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'TH.data'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:MASS':
+
+    geyser</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in mcp2matrix(model, linfct = linfct): covariate interactions found --
+default contrast might be inappropriate</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+     Simultaneous Tests for General Linear Hypotheses
+
+Multiple Comparisons of Means: Tukey Contrasts
+
+
+Fit: lme.formula(fixed = mac_corrected_cells_per_area_converted ~ 
+    cell_type * thymus_region, data = modeling_df, random = ~1 | 
+    sample)
+
+Linear Hypotheses:
+                      Estimate Std. Error z value Pr(&gt;|z|)    
+CMJ - Cortex == 0        83.78      39.59   2.116 0.086494 .  
+Medulla - Cortex == 0   238.80      39.59   6.032  &lt; 1e-04 ***
+Medulla - CMJ == 0      155.01      39.59   3.916 0.000269 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+(Adjusted p values reported -- single-step method)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'ordinal'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    slice</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'recipes'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:stats':
+
+    step</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bins: 4 (includes missing category)
+Breaks: -Inf, 17.47, 88.9, Inf</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: (1) Hessian is numerically singular: parameters are not uniquely determined 
+In addition: Absolute convergence criterion was met, but relative criterion was not met</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>formula: binned_outcome ~ cell_type:thymus_region
+data:    modeling_df
+
+ link  threshold nobs logLik AIC   niter max.grad cond.H 
+ logit flexible  45   -11.46 54.91 21(0) 3.28e-09 2.5e+10
+
+Coefficients: (1 not defined because of singularities)
+       cell_typeaDC1:thymus_regionCortex 
+                              -6.648e+01 
+ cell_typeaDC2_CD11c:thymus_regionCortex 
+                              -6.648e+01 
+  cell_typeCD14+cDC2:thymus_regionCortex 
+                              -6.648e+01 
+ cell_typeCD207+cDC1:thymus_regionCortex 
+                              -4.371e+01 
+        cell_typepDC:thymus_regionCortex 
+                              -2.186e+01 
+          cell_typeaDC1:thymus_regionCMJ 
+                              -1.386e+00 
+    cell_typeaDC2_CD11c:thymus_regionCMJ 
+                              -4.233e+01 
+     cell_typeCD14+cDC2:thymus_regionCMJ 
+                              -6.648e+01 
+    cell_typeCD207+cDC1:thymus_regionCMJ 
+                               2.277e+01 
+           cell_typepDC:thymus_regionCMJ 
+                              -2.558e-15 
+      cell_typeaDC1:thymus_regionMedulla 
+                               2.277e+01 
+cell_typeaDC2_CD11c:thymus_regionMedulla 
+                              -2.186e+01 
+ cell_typeCD14+cDC2:thymus_regionMedulla 
+                              -1.386e+00 
+cell_typeCD207+cDC1:thymus_regionMedulla 
+                               2.277e+01 
+       cell_typepDC:thymus_regionMedulla 
+                                      NA 
+
+Threshold coefficients:
+ low|med med|high 
+-43.0188  -0.6931 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>formula: binned_outcome ~ cell_type:thymus_region
+data:    modeling_df
+
+ link  threshold nobs logLik AIC   niter max.grad cond.H 
+ logit flexible  45   -11.46 54.91 21(0) 3.28e-09 2.5e+10
+
+Coefficients: (1 not defined because of singularities)
+                                           Estimate Std. Error z value Pr(&gt;|z|)
+cell_typeaDC1:thymus_regionCortex        -6.648e+01         NA      NA       NA
+cell_typeaDC2_CD11c:thymus_regionCortex  -6.648e+01         NA      NA       NA
+cell_typeCD14+cDC2:thymus_regionCortex   -6.648e+01         NA      NA       NA
+cell_typeCD207+cDC1:thymus_regionCortex  -4.371e+01         NA      NA       NA
+cell_typepDC:thymus_regionCortex         -2.186e+01         NA      NA       NA
+cell_typeaDC1:thymus_regionCMJ           -1.386e+00         NA      NA       NA
+cell_typeaDC2_CD11c:thymus_regionCMJ     -4.233e+01         NA      NA       NA
+cell_typeCD14+cDC2:thymus_regionCMJ      -6.648e+01         NA      NA       NA
+cell_typeCD207+cDC1:thymus_regionCMJ      2.277e+01         NA      NA       NA
+cell_typepDC:thymus_regionCMJ            -2.558e-15         NA      NA       NA
+cell_typeaDC1:thymus_regionMedulla        2.277e+01         NA      NA       NA
+cell_typeaDC2_CD11c:thymus_regionMedulla -2.186e+01         NA      NA       NA
+cell_typeCD14+cDC2:thymus_regionMedulla  -1.386e+00         NA      NA       NA
+cell_typeCD207+cDC1:thymus_regionMedulla  2.277e+01         NA      NA       NA
+cell_typepDC:thymus_regionMedulla                NA         NA      NA       NA
+
+Threshold coefficients:
+         Estimate Std. Error z value
+low|med  -43.0188         NA      NA
+med|high  -0.6931         NA      NA</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Single term deletions
+
+Model:
+binned_outcome ~ cell_type:thymus_region
+                        Df     AIC    LRT  Pr(&gt;Chi)    
+&lt;none&gt;                      54.915                     
+cell_type:thymus_region 14 102.875 75.961 1.576e-10 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="comparison-to-the-hogquist-figures" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-to-the-hogquist-figures">Comparison to the Hogquist figures</h2>
+<p>The Hogquist lab doesn’t actually do statistical testing between cell types called by histocytometry. They use flow cytometry data to make their boxplot and get significance. They do quantify the proportion of cells in each region without correcting for differences in area between cortex and medulla for their ROI. See Breed et al., 2022 Fig. 1E below.</p>
+<p>Papers:</p>
+<ul>
+<li><p><a href="10.4049/jimmunol.1900191">Breed et al., 2019</a></p></li>
+<li><p><a href="10.1038/s41590-022-01218-x">Breed et al., 2022</a></p></li>
+</ul>
+<p><strong>Breed et al., 2019 Fig. 5</strong> <img src="Hogquist_figs/Breed_2019_Fig5B_J_Immunol.png" class="img-fluid"></p>
+<p><strong>Breed et al., 2022 Fig. 1E</strong> <img src="Hogquist_figs/Breed_2022_Nat_Immunol_Fig1E.png" class="img-fluid"></p>
+</section>
+<section id="comparison-to-the-gerner-et-al.-2012-figures" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-to-the-gerner-et-al.-2012-figures">Comparison to the Gerner et al., 2012 figures</h2>
+<p>The Gerner paper compares the proportion of cells in each region without correcting for region area. They get significance with 3 samples.</p>
+<p><strong>Gerner et al., 2012 Fig. 5D and 5E</strong> <img src="Hogquist_figs/Gerner_2012_Fig5D_Immunity.png" class="img-fluid"></p>
+</section>
+<section id="cell-type-proportion-figure-with-ehrlich-data" class="level2">
+<h2 class="anchored" data-anchor-id="cell-type-proportion-figure-with-ehrlich-data">Cell type proportion figure with Ehrlich data</h2>
+<div class="cell" data-fig.dim="[12,8]">
+<div class="cell-output-display">
+<p><img src="histocytometry_paper_plots_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<p><strong>This comparison doesn’t yield any significance either using a wilcox signed rank exact test (non-parametric paired t-test).</strong></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "pDC"
+
+    Wilcoxon signed rank exact test
+
+data:  cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Medulla"] and cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Cortex"]
+V = 3, p-value = 1
+alternative hypothesis: true location shift is not equal to 0
+
+[1] "CD207+cDC1"
+
+    Wilcoxon signed rank exact test
+
+data:  cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Medulla"] and cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Cortex"]
+V = 6, p-value = 0.25
+alternative hypothesis: true location shift is not equal to 0
+
+[1] "aDC2_CD11c"
+
+    Wilcoxon signed rank exact test
+
+data:  cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Medulla"] and cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Cortex"]
+V = 2, p-value = 0.75
+alternative hypothesis: true location shift is not equal to 0
+
+[1] "aDC1"
+
+    Wilcoxon signed rank exact test
+
+data:  cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Medulla"] and cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Cortex"]
+V = 6, p-value = 0.25
+alternative hypothesis: true location shift is not equal to 0
+
+[1] "CD14+cDC2"
+
+    Wilcoxon signed rank exact test
+
+data:  cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Medulla"] and cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Cortex"]
+V = 6, p-value = 0.25
+alternative hypothesis: true location shift is not equal to 0
+
+[1] "aDC2_MerTK"
+
+    Wilcoxon signed rank exact test
+
+data:  cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Medulla"] and cell_type_props$prop_cells_region[cell_type_props$cell_type == cell_type &amp; cell_type_props$thymus_region == "Cortex"]
+V = 6, p-value = 0.25
+alternative hypothesis: true location shift is not equal to 0</code></pre>
+</div>
+</div>
+<p>This doesn’t look good enough to me to pursue further. If we scaled it by area, it would be statistically the same as the <span class="math inline">\(cells / mm^2\)</span> plots, which I think are more interpretable.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

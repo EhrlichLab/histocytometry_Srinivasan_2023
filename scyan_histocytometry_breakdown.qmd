@@ -1,0 +1,293 @@
+---
+title: "Analyzing cell types from Scyan thymus histocytometry"
+format: html
+editor: visual
+---
+
+```{r, include= FALSE}
+knitr::opts_chunk$set(echo= FALSE)
+library(here)
+library(ggplot2)
+library(dplyr)
+library(data.table)
+library(tidyr)
+library(ggbeeswarm)
+library(plotly)
+library(ggridges)
+```
+
+## Functions
+
+```{r}
+make_combined_df <- function(data_dir, knowledge_dir, img_exp_type) {
+  ## Scyan_data
+   files <- list.files(path       = data_dir, 
+                       pattern    = img_exp_type, 
+                       full.names = TRUE)
+   obs_df   <- read.csv(files[grepl("_obs.csv", files)])
+   dummy_df <- read.csv(files[grepl("experiment_dummy_", files)])
+   metadata_df <- inner_join(obs_df, dummy_df, by= "experiment")
+   
+   raw_df   <- read.csv(files[grepl(paste0("combined_mask_df_", img_exp_type,".csv"), files)]) %>% 
+     select(-X_centroid, -Y_centroid)
+    ## These won't match by inner_join due to floating point errors. 
+    ## I'll use coordinate values from metadata_df instead. 
+   combined_df <- inner_join(raw_df, metadata_df, by = c("CellID",  "experiment")) 
+   long_df <- combined_df %>% 
+     pivot_longer(cols = unlist(strsplit(x= img_exp_type, split= "_")),
+                    ## Get marker values
+                  names_to  = "markers", 
+                  values_to = "expression") %>% 
+     filter(markers != "DAPI")
+      ## We don't care about DAPI signal for cell type identification. 
+   
+   ## Adding annotated population names
+   knowledge_table <- list.files(path= knowledge_dir, pattern= img_exp_type, full.names= TRUE) %>% 
+     read.csv() %>%
+     mutate(scyan_pop= 0:(nrow(.)-1)) %>% 
+     rename(immune_cell = X) %>% 
+     select(scyan_pop, immune_cell)
+   
+   all_df <- full_join(long_df, knowledge_table, by= "scyan_pop") %>% 
+     mutate(immune_cell = ifelse(is.na(immune_cell), "Not_clustered", immune_cell)) %>% 
+        ## I want to do full_join to get the cells that don't map to any cluster 
+     filter(Area > 150)
+      ## Back of the napkin calculation for the size required to be a real cell
+      ## Small fragments of background stain get segmented by Mesmer for one reason or another
+      ## These aren't the cells that we want. 
+   
+   write.csv(x         = all_df, 
+             file      = paste0(data_dir, "/", img_exp_type, "_scyan_all.csv"), 
+             row.names = FALSE)
+   
+   
+   ## Making sure that the scyan_pops files don't have any duplicated CellIDs.
+    ## The issue is that I haven't found where the duplication occured in my original code.
+   uni_df <- full_join(combined_df, knowledge_table, by= "scyan_pop") %>% 
+     mutate(category = ifelse(is.na(immune_cell), "Not_clustered", immune_cell)) %>% 
+    filter(Area > 150)
+   
+   
+    count_output <- uni_df %>% 
+    group_by(experiment) %>% 
+    mutate(size= n(), 
+           nCells = length(unique(CellID)),
+           cell_cluster_pairs = length(unique(paste0(CellID, scyan_pop)))) %>% 
+    ungroup() %>% 
+    distinct(experiment, size, nCells, cell_cluster_pairs)
+    only_one_value_per_row <- apply(count_output %>% select(-experiment), 
+                                  MARGIN= 1, 
+                                  FUN= function(x){length(unique(x)) == 1}) 
+  print(only_one_value_per_row)
+  
+  for(indiv_exp_name in unique(uni_df$exp_name)){
+    exp_uni_df <- uni_df %>% 
+      dplyr::filter(exp_name == indiv_exp_name)
+    
+    out_path = paste0(gsub("sub_image_mask.csv", "", unique(exp_uni_df$exp_name)), "original_scyan_pops.csv")
+    exp_uni_df <- exp_uni_df %>% select(CellID, immune_cell, X_centroid, Y_centroid)
+    fwrite(x       = exp_uni_df, 
+         file      = out_path, 
+         row.names = FALSE)
+  }
+}
+
+
+  
+fix_all_data <- function(data_dir, knowledge_dir){
+  img_exp_types  = list.files(path= data_dir, pattern= "_obs.csv") 
+  img_exp_types  = unique(gsub("_combined_mask_df_scyan_(obs|X).csv", "", img_exp_types))
+  
+  for(img_exp_type in img_exp_types){
+    make_combined_df(data_dir      = data_dir, 
+                     knowledge_dir = knowledge_dir, 
+                     img_exp_type  = img_exp_type)
+  }
+}
+
+## I think this function has a bug in it. 
+  ## Not sure where though. 
+# add_scyan_pop_to_raw_data <- function(data_dir, 
+#                                       input_image_dir, 
+#                                       pop_csv_keyword= "_scyan_all.csv"){
+#   pop_files  = list.files(path       = data_dir,        
+#                           pattern    = pop_csv_keyword, 
+#                           full.names = TRUE)
+#   image_dirs = list.files(path       = input_image_dir, 
+#                           pattern    = "(2|4)0x_",      
+#                           full.names = TRUE)
+#   for(pop_file in pop_files){
+#    scyan_pops <- fread(pop_file) %>% as.data.frame() 
+#     ## The cell types from scyan are not unique for CellID, immune_cell, X_centroid, Y_centroid, exp_name
+#     ## Not unique b/c of the pivot_longer call earlier. 
+#       ## What the fuck happened here? Is this an "all" file issue? 
+#    exp_names <- gsub("/sub_image_mask.csv","", unique(scyan_pops$exp_name))
+#    
+#    for(exp_name in exp_names){
+#      image_dir = image_dirs[grepl(exp_name, image_dirs)]
+#      image_pops = scyan_pops %>% 
+#        filter(exp_name == exp_name) %>% 
+#        rename(category = immune_cell) %>% 
+#         ## Renaming to work with seg_mask_coloring_functions.jl
+#        select(CellID, category, X_centroid, Y_centroid) %>% 
+#        distinct() 
+#        
+#      
+#      fwrite(x         = image_pops, 
+#             file      = paste0(image_dir, "/", "scyan_pops.csv"),
+#             row.names = FALSE)
+#    }
+#   }
+# }
+```
+
+## Fixing data
+
+```{r}
+scyan_data_dir = "/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images/data"
+scyan_knowledge_dir = "/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images/knowledge_tables" 
+  
+rerun_processing= FALSE
+if(rerun_processing){
+  fix_all_data(data_dir     = scyan_data_dir,
+               knowledge_dir = scyan_knowledge_dir)
+}
+
+
+# raw_dir= "/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images"
+# add_scyan_pop_to_raw_data(data_dir        = scyan_data_dir, 
+#                           input_image_dir =  raw_dir)
+```
+
+## Do the cell types look correct?
+
+Do I want to normalize the data?
+
+## Expression comparison
+
+```{r}
+## Load cell types with individual marker expression
+## Plot the marker expression violin plot by cluster. 
+scyan_all_files= list.files(path= scyan_data_dir, pattern="_scyan_all.csv", full.names= TRUE)
+
+l <- htmltools::tagList()
+for(i in 1:length(scyan_all_files)){
+  scyan_all_file = scyan_all_files[i]
+  scyan_df <- read.csv(scyan_all_file) 
+  
+  ## Cell type proporiton breakdown
+  scyan_df %>% 
+    count(immune_cell) %>% 
+    mutate(proportion = signif(n/sum(n), digits= 2)) %>% 
+    print()
+  
+  
+  ## Expression comparison 
+  expression_plot <- ggplot(scyan_df) +
+    aes(x= expression, y= markers, fill=  immune_cell) +
+    geom_density_ridges(alpha= 0.5) + 
+    theme_bw()
+  plot(expression_plot)
+  
+  ## Immune cell "cluster" comparison 
+    ## Similar to biaxial plots
+  l[[i]] <- scyan_df %>% 
+    select(markers, expression, immune_cell, CellID, exp_name) %>% 
+    pivot_wider(names_from= markers, values_from = expression) %>%
+    select(-CellID, -exp_name) %>% 
+    plot_ly(x= as.formula(paste0('~', colnames(.)[2])),
+            y= as.formula(paste0("~", colnames(.)[3])), 
+            z= as.formula(paste0("~", colnames(.)[4])), 
+            color= ~immune_cell) %>% 
+    add_markers() %>% 
+    as_widget()
+}
+```
+
+## Expression space
+
+```{r}
+l
+```
+
+In general, the separation between clustered and neaby not_clustered populations is very small.There is not a lot of separation of cells in this 3D space in general. That is going to make unsupervised separation like this difficult if not impossible.
+
+It provides a good starting place for cell type identification though, and if it looks good on the overlay, I will run with it.
+
+## Next steps
+
+-   Bring plots into powerpoint.
+
+-   Add umaps to show immune cell population separation.
+
+-   I should also overlay these scyan clusters on the image and look for any missing cells.
+
+-   Once I've confirmed that everything looks good, I could shrink the nuclear expansion.
+
+-   I could also think about doing some initial cell proportions or cell counts for medulla vs. cortex for determining cell enrichment from the histocytometry.
+
+## Is each cell called for only one cell type?
+
+```{r, eval= FALSE }
+raw_dir = "/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images"
+image_dirs = list.files(path= raw_dir, pattern= "(2|4)0x_", full.names= TRUE)
+image_dirs = image_dirs[!grepl("SOCS2|40x_pan_DAPI_CD63_CD11c_XCR1", image_dirs)]
+
+for(image_dir in image_dirs){
+  scyan_pops = list.files(path= image_dir, pattern= "scyan_pops.csv", full.names= TRUE) %>% 
+    fread() %>% 
+    as.data.frame()
+  
+  scyan_rows <- nrow(scyan_pops)
+  unique_cell_cluster_pairs <- scyan_pops %>% distinct(CellID, category) %>% nrow()
+
+  print(image_dir)
+  print(scyan_rows)
+  scyan_pops %>% distinct() %>% dim() %>% print()
+
+  # print(scyan_rows == unique_cell_cluster_pairs)
+  # print(scyan_rows == length(unique(scyan_pops$CellID)))
+  # print(scyan_rows); print(unique_cell_cluster_pairs)
+  count_df <- scyan_pops %>% 
+    count(CellID, category) %>% 
+    filter(n > 1) %>% 
+    group_by(CellID) %>% 
+    mutate(is_dup= length(CellID)) %>% 
+    ungroup() %>% 
+    arrange(desc(is_dup))
+  print(count_df)
+  # print(nrow(count_df) == length(unique(count_df$CellID)))
+  # print(nrow(count_df) == length(unique(count_df[, c("CellID", "category")])))
+  print(nrow(count_df))
+  print(length(unique(count_df$CellID)))
+}
+## It really looks like a lot of the cells are actually called for multiple cell types 
+  ## I'm almost certain this was not the case with scyan originally, so it's a join issue on my end.
+  ## Not only do the cell types not match for individual cells, but it is for real cell types not just Not_clustered. 
+```
+
+## Are the original scyan output duplicated?
+
+They are.
+
+```{r, eval= FALSE}
+original_outputs <- list.files(path= scyan_data_dir, pattern= "_scyan_obs.csv", full.names= TRUE)
+
+for(original_output in original_outputs){
+  obs_df <- fread(original_output) %>% as.data.frame()
+  print(original_output) 
+  count_output <- obs_df %>% 
+    group_by(experiment) %>% 
+    mutate(size= n(), 
+           nCells = length(unique(CellID)),
+           cell_cluster_pairs = length(unique(paste0(CellID, scyan_pop)))) %>% 
+    ungroup() %>% 
+    distinct(experiment, size, nCells, cell_cluster_pairs)
+  print(count_output)
+  
+  only_one_value_per_row <- apply(count_output %>% select(-experiment), 
+                                  MARGIN= 1, 
+                                  FUN= function(x){length(unique(x)) == 1}) 
+  print(only_one_value_per_row)
+}
+```
