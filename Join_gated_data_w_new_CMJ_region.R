@@ -94,7 +94,5 @@ for(histo_dir in hc_dirs){
          paste0(histo_dir, "/", "gated_pops_w_new_CMJ.csv"),
          row.names= FALSE)
 }
-## I'm pretty sure that this code is stupid and could all be done w/ the data in the combine_fcs_output_files(), but I don't want to re-write it now. 
-
 
 
