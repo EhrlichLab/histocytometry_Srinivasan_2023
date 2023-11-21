@@ -1,9 +1,27 @@
-# jay_imaging_tmp
+# Histocytometry Srinivasan et al., 2023
 
-This folder has a bunch of junk, but I figured out how to push files from the server to this repository.
 
-TO DO: 
+### Code outline:
 
-- Make a separate directory on the server that contains only the final scripts for the paper's analysis.
+**Thymic region segmentation**
 
-- Wipe this directory and git push the new server directory to this one. 
+1. segment_thymic_region.ipynb
+
+2.
+
+3.
+
+**Single-cell segmentation**
+
+1. 
+
+2. 
+
+3. 
+
+**Manuscript figures**
+
+
+
+
+
