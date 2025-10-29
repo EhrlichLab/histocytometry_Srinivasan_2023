@@ -7,7 +7,7 @@
 
 1. segment_thymic_region.ipynb -- Segmentation of whole-lobe, medulla, and cortex
 
-2. segment_and_draw_CMJ.ipynb -- Segmentation of CMJ and drawing CMJ for manuscript images 
+2. segment_and_draw_CMJ.ipynb: Segmentation of CMJ and drawing CMJ for regions of interest images shown in Figure 1e.   
 
 3. find_thymus_region_area.ipynb -- Calculate size of each region for downstream analysis
 
@@ -26,16 +26,18 @@
 
 **Interpretaion**
 
-1. combining_gated_hc_pops.R -- Combine data from replicates
+1. combining_gated_hc_pops.R: Combine data from replicates
 
-2. Join_gated_data_w_new_CMJ_region.R -- Combine thymus region and single-cell imaging data
+2. Join_gated_data_w_new_CMJ_region.R: Combine thymus region and single-cell imaging data
+
+3. validate_gating_w_images.ipynb: Produce image overlays for visual inspection 
 
 
 **Manuscript figures**
 
-1. validate_gating_w_images.ipynb -- Produce image overlays for visual inspection 
+1. Figure 1 comes from segment_and_draw_CMJ.ipynb
 
-2. histocytometry_paper_plots.qmd
+2. Extended Data Figure 2h,i comes from statistical_testing_and_plotting_Figs.qmd
 
 
 

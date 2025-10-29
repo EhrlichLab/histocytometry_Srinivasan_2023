@@ -1,0 +1,151 @@
+---
+title: "Re-making histocytometry stats"
+author: "John Moore"
+format: html
+editor: visual
+date: 2025-10-28
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo= FALSE)
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(cowplot)
+library(latex2exp)
+library(patchwork)
+library(tidyr)
+library(ggbeeswarm)
+library(tibble)
+library(emmeans)
+library(afex)
+data.table::setDTthreads(threads= 20)
+```
+
+```{r}
+data_dir = "/stor/work/Ehrlich/Users/John/projects/misc/histocytometry/revision_2025/"
+cell_density = read.csv(file.path(data_dir, "cell_density_per_area_2025-10-28.csv")) %>% 
+  dplyr::filter(!(cell_type %in%  c("MerTK+ aDC2", "Macrophage"))) %>% 
+  dplyr::mutate(cell_type = factor(cell_type, levels= c("CD207+ cDC1","CD14+ cDC2", "aDC1", "aDC2","pDC")),
+                thymus_region = factor(thymus_region, levels= c("Cortex", "CMJ", "Medulla")))
+
+plot_dir = "/stor/work/Ehrlich/Users/John/projects/misc/histocytometry/plots/revision_plots/"
+```
+
+# Extended Data Figure 2h
+
+**Comparing cell type density across thymic regions**
+
+## Repeated measures anova
+
+Repeated measures refers to multiple measurements from the same individual (paired)
+
+```{r}
+uni_cell_types = unique(cell_density$cell_type)
+p_list <- vector(mode= "list", length= length(uni_cell_types))
+names(p_list) <- uni_cell_types
+
+
+for(uni_cell_type in uni_cell_types){
+  print(uni_cell_type)
+  model_cell <- cell_density %>% 
+    as.data.frame() %>%
+    distinct(log10_density, thymus_region, cell_type, sample) %>% 
+    filter(cell_type == uni_cell_type)
+  
+  
+  afmod <- afex::aov_car(log10_density ~ thymus_region + Error(sample/thymus_region), 
+                         data= model_cell)
+
+  print(afex::nice(afmod, es="pes", correction = "GG"))
+  
+  em_version <- emmeans::emmeans(afmod, specs = ~thymus_region)
+  emmeans_results <- emmeans(afmod, "thymus_region")
+  pairwise_results <- pairs(emmeans_results, adjust = "tukey")
+  print(pairwise_results)
+  
+  p_list[[uni_cell_type]] <- pairwise_results %>% 
+    as.data.frame() %>% 
+    dplyr::mutate(
+      cell_type= uni_cell_type,
+      stars=  case_when(p.value < 0.0001 ~ "***",
+                        p.value < 0.01   ~ "**",
+                        p.value < 0.05   ~ "*",
+                        p.value > 0.05   ~ "ns")
+    ) 
+}
+rm_anova <- data.table::rbindlist(l= p_list, use.names= TRUE)
+
+rm_anova %>% 
+  dplyr::select(contrast, cell_type,	p.value,	stars,	estimate,	SE,	df,	t.ratio) %>% 
+  write.csv(
+    file= "/stor/work/Ehrlich/Users/John/projects/misc/histocytometry/revision_2025/repeated_measures_anova_2025-10-29.csv",
+    row.names= FALSE
+  )
+```
+
+```{r}
+plot_stats <- rm_anova %>% 
+  mutate(cell_type = factor(cell_type, levels= c("CD207+ cDC1","CD14+ cDC2", "aDC1", "aDC2", "pDC"))) %>%
+  arrange(cell_type, contrast) %>%  
+  mutate(start = gsub(" -.*", "", contrast),
+         end   = gsub(".*- ", "", contrast),
+         y     = c(350, 700, 600,
+                   50, 233, 200,
+                   500, 200, 583, 
+                   45, 35, 52.5, 
+                   110, 150, 128),
+         is_sig = p.value < 0.05) %>%
+  dplyr::filter(is_sig)
+
+cell_density_w_pvalues <- ggplot(cell_density) +
+  aes(x= thymus_region, y= cell_density) + 
+  geom_quasirandom(size= 3, dodge.width = 0.3) +
+  geom_signif(data= plot_stats, 
+              aes(xmin        = start, 
+                  xmax        = end, 
+                  annotations = round(p.value, digits= 4),
+                  y_position  = y),
+              textsize= 8, 
+              manual= TRUE) +
+  theme_cowplot(font_size = 20) +
+  facet_wrap(~cell_type, scales = "free_y", ncol = 5) +
+  xlab("") + 
+  scale_y_continuous(name   = TeX("Cells / $mm^2$"),
+                     expand = expansion(mult= c(0.05, 0.15)),
+                     limits = c(0, NA)) 
+  
+cell_density_w_pvalues
+
+ggsave(filename = file.path(plot_dir, "cell_density_w_pvalues_faceted_by_cell_type.pdf"),
+       plot     = cell_density_w_pvalues, 
+       width    = 18,
+       height   = 4)
+```
+
+# Extended Data Figure 2i
+
+**Cortical density plot**
+
+```{r}
+cortical_DC_log10_density_plot <- cell_density %>% 
+  dplyr::mutate(cell_type = gsub(" ", "\n", cell_type),
+                cell_type = factor(cell_type, levels= c("CD207+\ncDC1", "CD14+\ncDC2", "aDC1", "aDC2", "pDC"))) %>% 
+  dplyr::filter(thymus_region == "Cortex") %>% 
+  ggplot() +
+  aes(x= cell_type, y= cell_density) + 
+  geom_quasirandom(size= 3, dodge.width = 0.3) +
+  theme_cowplot(font_size = 20) +
+  xlab("") + 
+  scale_y_continuous(name   = TeX("Cells / $mm^2$"),
+                     expand = expansion(mult= c(0.05, 0.15)),
+                     limits = c(0, NA))  +
+  ggtitle("Cortical Cell Density") 
+
+cortical_DC_log10_density_plot 
+
+ggsave(filename = file.path(plot_dir, "cortical_DC_density_2025-10-28.pdf"), 
+       plot     = cortical_DC_log10_density_plot, 
+       height   = 6, 
+       width    = 6)
+```

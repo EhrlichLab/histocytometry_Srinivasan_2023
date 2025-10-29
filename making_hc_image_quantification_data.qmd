@@ -1,0 +1,142 @@
+---
+title: "Making histocytometry image quantification data"
+author: "John Moore"
+format: html
+editor: visual
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo= FALSE)
+library(dplyr)
+library(data.table)
+library(tidyr)
+data.table::setDTthreads(threads= 20)
+```
+
+# Processing data
+
+## Loading imaging quantification 
+```{r}
+raw_dir = "/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images/images_2023-08-10"
+hc_dirs = list.dirs(path= raw_dir, full.names= TRUE) 
+hc_dirs = sort(hc_dirs[grepl("_[A-D]$", hc_dirs)])
+hc_dirs = hc_dirs[!grepl("Sirpa_C$|CD207_CD11c_XCR1_C$|MerTK_C$|20x_pan_DAPI_CD63_CD11c_XCR1_D$", hc_dirs)]
+
+region_areas <- fread("/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images/images_2023-08-10/data/region_areas_50um.csv") %>% 
+  as.data.frame() %>% 
+  dplyr::filter(region_id != 0)
+  
+gated_df_list <- vector(mode= "list", length = length(hc_dirs))
+names(gated_df_list) <- hc_dirs
+
+for(histo_dir in hc_dirs){
+  gated_df_list[[histo_dir]] <- paste0(histo_dir, "/gated_pops_w_new_CMJ.csv") %>% 
+    data.table::fread() %>% 
+    as.data.frame() %>% 
+    dplyr::mutate(sample = histo_dir) %>% 
+    dplyr::rename(region_id= tissue_intensity_median) %>% 
+    dplyr::filter(region_id != 0) %>% 
+    dplyr::left_join(region_areas, by= c("sample", "region_id")) %>% 
+    dplyr::filter(cell_type != "not_annotated") %>% 
+    dplyr::select(CellID, X_centroid, Y_centroid, Area, cell_type, region_id, sample,
+           region_pixel_count, region_area, region_prop_table, total_area)
+}
+
+all_gated_cells <- do.call(rbind, gated_df_list)
+```
+
+
+## Removing image tiles with poor resolution
+  
+- SiglecH_A has 1
+  
+- SiglecH_B has 2
+
+```{r}
+all_gated_cells <- all_gated_cells %>% 
+  dplyr::filter(
+    !(grepl("20x_pan_DAPI_B220_CD11c_SiglecH_A", sample) &
+    Y_centroid < 14762 & Y_centroid > 13361 & X_centroid < 4190  & X_centroid > 2801),
+    !(grepl("20x_pan_DAPI_B220_CD11c_SiglecH_B", sample) &
+    ((Y_centroid < 9308 & Y_centroid > 7916 & X_centroid < 5522 & X_centroid > 4112) |
+    (Y_centroid < 16243 & Y_centroid > 14851 & X_centroid < 8315 & X_centroid > 6903))))
+```
+
+## Converting thymic region masks to str labels and calculating stats
+```{r}
+all_region_info <- all_gated_cells %>%
+  dplyr::group_by(sample, region_id, cell_type) %>% 
+  dplyr::mutate(
+    n_cell = length(unique(CellID)), 
+    cells_per_area = n_cell/region_area) %>% ## Units here will be cells per um^2
+  dplyr::ungroup() %>% 
+  dplyr::distinct(sample, region_id, n_cell, region_area, cells_per_area, cell_type) %>% 
+  dplyr::mutate(thymus_region = ifelse(region_id == 1, "Cortex", 
+                                ifelse(region_id == 2, "CMJ", 
+                                       ifelse(region_id == 3, "Medulla", NA))),
+         thymus_region = factor(thymus_region, levels= c("Cortex", "CMJ", "Medulla")),
+         cells_per_area_converted = cells_per_area * 1000^2,
+         cell_type = ifelse(cell_type == "aDC2" & grepl("DAPI_CD63_CD11c_Sirpa_[A-D]$", sample),
+                            "aDC2_CD11c", 
+                            ifelse(cell_type == "aDC2" & grepl("DAPI_Sirpa_CD63_MerTK_[A-D]$", sample), 
+                                   "aDC2_MerTK", cell_type)),
+         cell_type = factor(cell_type, 
+                            levels= c("CD207+cDC1","CD14+cDC2", 
+                                      "aDC1", "aDC2_CD11c", "aDC2_MerTK", "pDC", "Macrophage"))) %>% 
+  as.data.frame()
+```
+
+## Removing macrophages from aDC2s 
+```{r}
+aDC2_ratio <- all_region_info %>% 
+  dplyr::filter(cell_type %in% c("aDC2_MerTK", "Macrophage")) %>% 
+  tidyr::pivot_wider(id_cols = c(sample, thymus_region),
+              names_from  = cell_type, 
+              values_from = cells_per_area_converted) %>% 
+  dplyr::mutate(aDC2_over_mac = aDC2_MerTK / Macrophage,
+         prob_aDC2     = aDC2_MerTK / (aDC2_MerTK + Macrophage)) %>% 
+  as.data.frame()
+
+## Measure of center for odds that aDC2 is a macrophage based on MerTK given its region
+aDC2_stats <- aDC2_ratio %>% 
+  dplyr::group_by(thymus_region) %>% 
+  dplyr::mutate(med_prob = median(prob_aDC2)) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select(thymus_region, matches("prob$")) %>% 
+  dplyr::distinct() 
+
+corrected_all_region_info <- all_region_info %>% 
+  dplyr::left_join(aDC2_stats, by= "thymus_region") %>% 
+  dplyr::mutate(mac_corrected_cells_per_area_converted = ifelse(cell_type == "aDC2_CD11c", 
+                                                                cells_per_area_converted * med_prob,
+                                                                cells_per_area_converted))
+```
+
+## Final data version for statistical testing and plotting 
+```{r}
+plot_cell_names <- c("CD207+cDC1" = "CD207+ cDC1", 
+                     "CD14+cDC2"   = "CD14+ cDC2",
+                     "aDC1"        = "aDC1",
+                     "aDC2_CD11c"  = "aDC2", 
+                     "aDC2_MerTK"  = "MerTK+ aDC2", 
+                     "pDC"         = "pDC",
+                     "Macrophage"  = "Macrophage")
+
+cell_density <- corrected_all_region_info %>% 
+  dplyr::mutate(
+    cell_type = plot_cell_names[cell_type],
+    cell_type = factor(cell_type, 
+                       levels= c("CD207+ cDC1","CD14+ cDC2", "aDC1", "aDC2", "MerTK+ aDC2", "pDC", "Macrophage"))
+  ) %>% 
+  dplyr::rename(cell_density = mac_corrected_cells_per_area_converted) %>% 
+  dplyr::select(sample, n_cell, region_area, cells_per_area, cell_type, thymus_region, cell_density) %>%
+  dplyr::mutate(log10_density = log10(cell_density)) %>% 
+  as.data.frame()
+
+fwrite(x= cell_density, 
+       # file= "/stor/scratch/Ehrlich/Users/John/histocytometry/raw_images/images_2023-08-10/data/cell_density_per_area_2023-11-06.csv",
+       file= "/stor/work/Ehrlich/Users/John/projects/misc/histocytometry/revision_2025/cell_density_per_area_2025-10-28.csv",
+       row.names = FALSE)
+```
+
+
