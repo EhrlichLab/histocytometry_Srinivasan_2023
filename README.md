@@ -5,19 +5,19 @@
 
 **Thymic region segmentation**
 
-1. segment_thymic_region.ipynb -- Segmentation of whole-lobe, medulla, and cortex
+1. segment_thymic_region.ipynb: Segmentation of whole-lobe, medulla, and cortex
 
 2. segment_and_draw_CMJ.ipynb: Segmentation of CMJ and drawing CMJ for regions of interest images shown in Figure 1e.   
 
-3. find_thymus_region_area.ipynb -- Calculate size of each region for downstream analysis
+3. find_thymus_region_area.ipynb: Calculate size of each region for downstream analysis
 
 **Single-cell segmentation**
 
-1. making_histocytometry_thymus_cellpose_training_data.ipynb -- Manually curated training regions for custom Cellpose model
+1. making_histocytometry_thymus_cellpose_training_data.ipynb: Manually curated training regions for custom Cellpose model
 
-2. DC_Mac_segmentation.py -- Single-cell segmentation of images using custom Cellpose model
+2. DC_Mac_segmentation.py: Single-cell segmentation of images using custom Cellpose model
 
-3. per_cell_marker_quantification.sh -- Extract marker expression values from segmented cells
+3. per_cell_marker_quantification.sh: Extract marker expression values from segmented cells
 
     a. filter_cell_area_size.R
 
